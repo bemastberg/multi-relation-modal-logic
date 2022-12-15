@@ -1,0 +1,15 @@
+{
+  "type": "module",
+  "name": "dynamic-epistemic-logic",
+  "version": "1.0.0",
+  "main": "modalities.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "formula-parser": "^2.0.1"
+  }
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Create your own model!</title>
+    <script src="createModel.js"></script>
+</head>
+
+<body style="background-color:teal">
+    <h1>Create your own Epistemic Logic model!
+    </h1>
+    <p><a href="index.html">Go home</a></p>
+    <form>
+        <label for="worlds">Number of worlds</label>
+        <input type="number" name="worlds" id="worlds" />
+        <input type="button" value="Submit" onclick="selectNumberOfWorlds()">
+    </form>
+    <form id="relations">
+    </form>
+    <form id="truthvalues"></form>
+    <div id="showmodel">
+        <p id="showmodelvaluations">VALUATIONS<br></p>
+        <p id="showmodelrelations">RELATIONS<br></p>
+        <p id="savemodel"></p>
+    </div>
+</body>
+
+</html>

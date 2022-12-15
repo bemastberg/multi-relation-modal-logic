@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="/parser_test.js" type="module"></script>
+    <script src="/forcedProperties.js" type="module"></script>
+    <script>var exports = {};</script>
+</head>
+
+<body>
+    <p><a href="createmodel.html">Create your own model here</a></p>
+
+    <form id="getmodel">
+        Input model worlds (in json format) <input type="file" id="inputworlds"><br>
+        Input model relations (in json format) <input type="file" id="inputrelations" accept=".json"><br>
+        <button>Upload</button>
+    </form>
+    <form id="frm1">
+        <span id="formulaInput">Please input your formula <input type="text" id="formula"></span><br>
+        Please input evaluation point <input type="text" id="evaluationPoint"><br>
+        <input type="button" onclick="evaluateFormula()" value="Submit">
+    </form>
+    <p id="result"></p>
+    <p id="showmodel">
+        Reflexive <input type="checkbox" id="reflexiveCheckBox" onclick="checkReflexivity()"><br>
+        Symmetric <input type="checkbox" id="symmetricCheckBox" onclick="checkSymmetry()"> <br>
+        Transitive <input type="checkbox" id="transitiveCheckBox" onclick="checkTransitivity()">
+    </p>
+    <h2>Language</h2>
+    <h3>Basic Propositional language</h3>
+    Propositional variables: p,q,r,s, etc. Any lower case letter (probably nice to avoid agent names)<br>
+    Negation: ~<br>
+    Disjunction: |<br>
+    Conjunction: &<br>
+    Implication: -><br>
+    Equivalence: <-><br>
+        <h3>Modalities</h3>
+        Knowledge: K<i>i</i><br>
+        Diamond: <><i>i</i><br>
+            Global modality: E<br>
+            Difference modality: D<br>
+            <h3>Public announcements</h3>
+            <p>Implemented as a binary operator, where the left hand argument is the formula to be announced and the
+                right
+                hand
+                argument is the formula to be evaluated</p>
+            <p>Example: p[!]Kap: After p is announced, a will know p. (Typically written [p!]Kap or [!p]Kap)</p>
+            <h3>Todo:</h3>
+            <ul>
+                <li>Complete transitive closure</li>
+                <li>Fix error when trying to evaluate a point that don't exist</li>
+                <li>Add more modalities (E, D, etc)</li>
+                <li>Look at cases where forced transitivity and symmetry may interact</li>
+            </ul>
+</body>
+
+</html>
