@@ -1,1 +1,1 @@
-declare module 'formula-parser.es.js';
+declare module 'formula-parser.es';
