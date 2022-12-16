@@ -1,4 +1,4 @@
-import FormulaParser from "Dynamic-epistemic-logic-test/node_modules/formula-parser/dist/formula-parser.es.js";
+import FormulaParser from "/node_modules/formula-parser/dist/formula-parser.es.js";
 //const FormulaParser = require("./node_modules/formula-parser/dist/formula-parser.es.js")
 //import FormulaParser from "./formula-parser.es.js";
 
