@@ -40,7 +40,7 @@ let form = document.querySelector('#getmodel')
 let uploadRelations = document.querySelector('#inputrelations')
 let uploadWorlds = document.querySelector('#inputworlds')
 
-form.addEventListener('Upload', handleSubmit)
+form.addEventListener('submit', handleSubmit)
 function handleSubmit(event) {
     event.preventDefault();
     if (!uploadRelations.value.length) return;
