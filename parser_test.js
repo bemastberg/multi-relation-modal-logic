@@ -36,13 +36,13 @@ const binaries = [
     { symbol: '[!]', key: 'ann', precedence: 4, associativity: 'right' }
 ];
 
-let form = document.querySelector('#getmodel')
+let uploadButton = document.querySelector('#uploadButton')
 let uploadRelations = document.querySelector('#inputrelations')
 let uploadWorlds = document.querySelector('#inputworlds')
 
-form.addEventListener('submit', handleSubmit)
-function handleSubmit(event) {
-    event.preventDefault();
+uploadButton.addEventListener //(handleSubmit)
+window.handleSubmit = async function () {
+    //event.preventDefault();
     if (!uploadRelations.value.length) return;
     if (!uploadWorlds.value.length) return;
     let relationsReader = new FileReader();
