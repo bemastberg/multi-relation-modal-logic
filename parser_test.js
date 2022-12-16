@@ -1,4 +1,6 @@
-import FormulaParser from "./node_modules/formula-parser/dist/formula-parser.es.js";
+//import FormulaParser from "./node_modules/formula-parser/dist/formula-parser.es.js";
+import FormulaParser from "./formula-parser.es.js";
+
 //const FormulaParser = require('formula-parser.js');
 //import { diamond, box, atom } from "./modalities.js";
 import { forceReflexivity, forceSymmetry, forceTransitivity, forcedTransitions, removeForcedProperty } from "./forcedProperties.js";
