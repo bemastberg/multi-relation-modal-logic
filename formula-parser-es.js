@@ -217,4 +217,5 @@ class FormulaParser {
   }
 }
 
-export default FormulaParser;
+//export default FormulaParser;
+export { FormulaParser };
