@@ -40,6 +40,7 @@ let uploadButton = document.querySelector('#uploadButton')
 let uploadRelations = document.querySelector('#inputrelations')
 let uploadWorlds = document.querySelector('#inputworlds')
 
+
 uploadButton.addEventListener //(handleSubmit)
 window.handleSubmit = async function () {
     //event.preventDefault();
