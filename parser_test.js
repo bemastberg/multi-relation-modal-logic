@@ -39,7 +39,8 @@ const binaries = [
 let form = document.querySelector('#getmodel')
 let uploadRelations = document.querySelector('#inputrelations')
 let uploadWorlds = document.querySelector('#inputworlds')
-form.addEventListener('submit', handleSubmit)
+
+form.addEventListener('Upload', handleSubmit)
 function handleSubmit(event) {
     event.preventDefault();
     if (!uploadRelations.value.length) return;
