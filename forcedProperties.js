@@ -1,8 +1,14 @@
 import { relations } from "./parser_test.js";
+
+// Create an object which stores the added transitions
 let forcedTransitions = new Object()
 forcedTransitions["Transitive"] = new Array();
 forcedTransitions["Symmetric"] = new Array();
 forcedTransitions["Reflexive"] = new Array();
+
+// Functions to implement assumed reflexivity, symmetry and transitivity.
+// The added transitions are stored in object forcesTransitions as arrays.
+// Example: [agent, sourceWorld, targetWorld]
 
 function forceReflexivity() {
     let reflexiveRelations = relations;

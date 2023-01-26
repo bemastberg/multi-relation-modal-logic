@@ -1,5 +1,6 @@
 
 import { FormulaParser } from "./formula-parser-es.js";
+import { powerSet } from "./powerSetOfAgents.js";
 
 //const FormulaParser = require("./node_modules/formula-parser/dist/formula-parser.es.js")
 
@@ -23,7 +24,8 @@ const unaries = [
     { symbol: `K`, key: `nec`, precedence: 4 },
     { symbol: '<>', key: 'poss', precedence: 4 },
     { symbol: 'D', key: 'diff', precedence: 4 },
-    { symbol: 'E', key: 'glob', precedence: 4 }
+    { symbol: 'E', key: 'glob', precedence: 4 },
+    { symbol: '[C!]', key: 'comm', precedence: 4 }
 
 ];
 
@@ -68,7 +70,11 @@ function logFileRelations(event) {
     const agents = Object.keys(relations);
     for (const agent of agents) {
         unaries.push({ symbol: `K${agent}`, key: `nec${agent}`, precedence: 4 });
-        unaries.push({ symbol: `<>${agent}`, key: `poss${agent}`, precedence: 4 })
+        unaries.push({ symbol: `<>${agent}`, key: `poss${agent}`, precedence: 4 });
+    }
+    for (const agent of powerSet(agents)) {
+        unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 })
+        //{ symbol: '[C!]', key: 'comm', precedence: 4 }
     }
     console.log(relations)
 
