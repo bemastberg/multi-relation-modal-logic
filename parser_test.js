@@ -1,10 +1,6 @@
 
 import { FormulaParser } from "./formula-parser-es.js";
 import { powerSet } from "./powerSetOfAgents.js";
-
-//const FormulaParser = require("./node_modules/formula-parser/dist/formula-parser.es.js")
-
-
 import { forceReflexivity, forceSymmetry, forceTransitivity, forcedTransitions, removeForcedProperty } from "./forcedProperties.js";
 import { publicAnnouncement } from "./dynamicOperations.js";
 import { cartesian } from "./furtherModalities.js";

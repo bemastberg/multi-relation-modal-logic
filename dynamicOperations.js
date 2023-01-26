@@ -30,4 +30,32 @@ function publicAnnouncement(formula, worlds, relations) {
 
 }
 
+function publicCommunication(agents, communicatingAgents, worlds, relations) {
+    const notCommunicatingAgents = agents.filter(agent => !communicatingAgents.includes(agent))
+    let communicatingAgentsRelation = new Object();
+    let newRelation = new Object();
+    // step one: intersect relations of communication agents
+    for (const world of Object.keys(worlds)) {
+        let toBeIntersected = new Array();
+        for (const agent of communicatingAgents) {
+            toBeIntersected.push([...relations[agent][world]]);
+        }
+        if (toBeIntersected.length > 0) {
+            var intersectedWorld = new Set(toBeIntersected.reduce((a, b) => a.filter(c => b.includes(c))));
+        } else { continue }
+        communicatingAgentsRelation[world] = intersectedWorld;
+    };
+    // step two: intersect remaining agent's relations with communicating agents
+    for (const world of Object.keys(worlds)) {
+        for (const agent of communicatingAgents) {
+            newRelation[agent][world] = communicatingAgentsRelation[world];
+        }
+        for (const agent of notCommunicatingAgents) {
+            newRelation[agent][world] = new Set(new Array(relations[agent][world], communicatingAgentsRelation[world]).reduce((a, b) => a.filter(c => b.includes(c))))
+        }
+    }
+    return newRelation;
+}
+
+
 export { publicAnnouncement };
