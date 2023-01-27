@@ -3,6 +3,7 @@ import { FormulaParser } from "./formula-parser-es.js";
 import { powerSet } from "./powerSetOfAgents.js";
 import { forceReflexivity, forceSymmetry, forceTransitivity, forcedTransitions, removeForcedProperty } from "./forcedProperties.js";
 import { publicAnnouncement } from "./dynamicOperations.js";
+import { publicCommunication } from "./dynamicOperations.js";
 import { cartesian } from "./furtherModalities.js";
 console.log(forcedTransitions)
 //import relations1 from '/relations.json' assert {type: 'json'}
@@ -160,6 +161,10 @@ function truth(world, worlds, relations, parsedFormula) {
     else if (parsedFormula.ann) {
         const announcedModel = publicAnnouncement(parsedFormula.ann[0], worlds, relations)
         return (truth(world, announcedModel[0], announcedModel[1], parsedFormula.ann[1]))
+    }
+    else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'comm') {
+        const communicatedModel = publicCommunication(Object.keys(relations), Object.keys(parsedFormula)[0].slice(4), worlds, relations);
+        return truth(world, worlds, communicatedModel, Object.keys(parsedFormula)[0]);
     }
     else if (parsedFormula.glob) {
         const globalModel = cartesian(true);

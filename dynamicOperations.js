@@ -58,4 +58,4 @@ function publicCommunication(agents, communicatingAgents, worlds, relations) {
 }
 
 
-export { publicAnnouncement };
+export { publicAnnouncement, publicCommunication };
