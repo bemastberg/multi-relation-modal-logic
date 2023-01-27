@@ -42,7 +42,7 @@ function publicCommunication(agents, communicatingAgents, worlds, relations) {
         }
         if (toBeIntersected.length > 0) {
             var intersectedWorld = new Set(toBeIntersected.reduce((a, b) => a.filter(c => b.includes(c))));
-        } else { continue }
+        } else { var intersectedWorld = new Array() }
         communicatingAgentsRelation[world] = intersectedWorld;
     };
     // step two: intersect remaining agent's relations with communicating agents
