@@ -73,7 +73,7 @@ function logFileRelations(event) {
         unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 })
         //{ symbol: '[C!]', key: 'comm', precedence: 4 }
     }
-    console.log(relations)
+    console.log(unaries)
 
 }
 
@@ -87,6 +87,10 @@ window.getModel = async function () {
     for (const agent of agents) {
         unaries.push({ symbol: `K${agent}`, key: `nec${agent}`, precedence: 4 });
         unaries.push({ symbol: `<>${agent}`, key: `poss${agent}`, precedence: 4 })
+    }
+    for (const agent of powerSet(agents)) {
+        unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 })
+        //{ symbol: '[C!]', key: 'comm', precedence: 4 }
     }
 
 
