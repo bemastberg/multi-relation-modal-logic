@@ -48,6 +48,7 @@ function publicCommunication(agents, communicatingAgents, worlds, relations) {
     // step two: intersect remaining agent's relations with communicating agents
     for (const world of Object.keys(worlds)) {
         for (const agent of communicatingAgents) {
+            console.log(communicatingAgentsRelation);
             newRelation[agent][world] = communicatingAgentsRelation[world];
         }
         for (const agent of notCommunicatingAgents) {
