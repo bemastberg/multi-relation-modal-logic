@@ -34,6 +34,9 @@ function publicCommunication(agents, communicatingAgents, worlds, relations) {
     const notCommunicatingAgents = agents.filter(agent => !communicatingAgents.includes(agent))
     let communicatingAgentsRelation = new Object();
     let newRelation = new Object();
+    for (const agent of agents) {
+        newRelation[agent] = new Object();
+    }
     // step one: intersect relations of communication agents
     for (const world of Object.keys(worlds)) {
         let toBeIntersected = new Array();
@@ -48,7 +51,6 @@ function publicCommunication(agents, communicatingAgents, worlds, relations) {
     // step two: intersect remaining agent's relations with communicating agents
     for (const world of Object.keys(worlds)) {
         for (const agent of communicatingAgents) {
-            console.log(communicatingAgentsRelation);
             newRelation[agent][world] = communicatingAgentsRelation[world];
         }
         for (const agent of notCommunicatingAgents) {

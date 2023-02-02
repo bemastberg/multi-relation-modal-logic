@@ -138,6 +138,7 @@ window.checkTransitivity = async function () {
 
 
 function truth(world, worlds, relations, parsedFormula) {
+    //console.log(parsedFormula)
     if (parsedFormula.prop) {
         return (worlds[world].includes(parsedFormula.prop))
     }
@@ -168,7 +169,7 @@ function truth(world, worlds, relations, parsedFormula) {
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'comm') {
         const communicatedModel = publicCommunication(Object.keys(relations), Object.keys(parsedFormula)[0].slice(4), worlds, relations);
-        return truth(world, worlds, communicatedModel, Object.keys(parsedFormula)[0]);
+        return truth(world, worlds, communicatedModel, parsedFormula[Object.keys(parsedFormula)[0]]);
     }
     else if (parsedFormula.glob) {
         const globalModel = cartesian(true);
