@@ -5,6 +5,8 @@
     <script src="./parser_test.js" type="module"></script>
     <script src="./forcedProperties.js" type="module"></script>
     <script>var exports = {};</script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+
 </head>
 
 <body>
@@ -21,7 +23,9 @@
         Please input evaluation point <input type="text" id="evaluationPoint"><br>
         <input type="button" onclick="evaluateFormula()" value="Submit">
     </form>
-    <p id="result"></p>
+    <p id="drawModel">
+        <input type="button" onclick="drawModel()" value="Draw">
+    </p>
     <p id="showmodel">
         Reflexive <input type="checkbox" id="reflexiveCheckBox" onclick="checkReflexivity()"><br>
         Symmetric <input type="checkbox" id="symmetricCheckBox" onclick="checkSymmetry()"> <br>
@@ -61,6 +65,8 @@
                 <li>Look at cases where forced transitivity and symmetry may interact</li>
             </ul>
             <p>blablabl</p>
+            <div id="my_graph"></div>
+            <script></script>
 </body>
 
 </html>
