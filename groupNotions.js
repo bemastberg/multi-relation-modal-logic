@@ -10,9 +10,25 @@ function everybodyKnows(agents, worlds, relations) {
         }
         newRelation[world] = [...new Set(toBeUnionized)];
     }
-    console.log(newRelation)
     return newRelation;
 
 }
 
-export { everybodyKnows }
+function distributedKnowledge(agents, worlds, relations) {
+    let newRelation = new Object();
+    for (const world of Object.keys(worlds)) {
+        let toBeIntersected = new Array();
+        for (const agent of agents) {
+            toBeIntersected.push([...relations[agent][world]]);
+        }
+        if (toBeIntersected.length > 0) {
+            var intersectedWorld = new Array(toBeIntersected.reduce((a, b) => a.filter(c => b.includes(c))));
+        } else { continue }
+        newRelation[world] = intersectedWorld;
+    }
+
+    return newRelation;
+
+}
+
+export { everybodyKnows, distributedKnowledge }

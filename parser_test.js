@@ -6,7 +6,7 @@ import { publicAnnouncement } from "./dynamicOperations.js";
 import { publicCommunication } from "./dynamicOperations.js";
 import { cartesian } from "./furtherModalities.js";
 import { toD3js } from "./toD3Data.js";
-import { everybodyKnows } from "./groupNotions.js";
+import { everybodyKnows, distributedKnowledge } from "./groupNotions.js";
 //import * as d3 from "./node_modules/d3/dist/d3.js";
 
 //import relations1 from '/relations.json' assert {type: 'json'}
@@ -27,7 +27,8 @@ const unaries = [
     { symbol: 'D', key: 'diff', precedence: 4 },
     { symbol: 'E', key: 'glob', precedence: 4 },
     { symbol: '[C!]', key: 'comm', precedence: 4 },
-    { symbol: 'EK', key: 'ekno', precedence: 4 }
+    { symbol: 'EK', key: 'ekno', precedence: 4 },
+    { symbol: 'DK', key: 'dist', precedence: 4 }
 
 ];
 
@@ -80,7 +81,8 @@ function logFileRelations(event) {
     }
     for (const agent of powerSet(agents)) {
         unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 });
-        unaries.push({ symbol: `EK${agent}`, key: `ekno${agent}`, precedence: 4 })
+        unaries.push({ symbol: `EK${agent}`, key: `ekno${agent}`, precedence: 4 });
+        unaries.push({ symbol: `DK${agent}`, key: `dist${agent}`, precedence: 4 })
         //{ symbol: '[C!]', key: 'comm', precedence: 4 }
     }
     console.log(worlds)
@@ -195,6 +197,10 @@ function truth(world, worlds, relations, parsedFormula) {
         const unionizedModel = everybodyKnows(Object.keys(parsedFormula)[0].slice(4), worlds, relations)
         //return truth(world, worlds, unionizedModel, parsedFormula[Object.keys(parsedFormula)[0]]);
         return (unionizedModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]) })
+    }
+    else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'dist') {
+        const intersectedModel = distributedKnowledge(Object.keys(parsedFormula)[0].slice(4), worlds, relations);
+        return (intersectedModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]) })
     }
 
     else { throw new Error('Invalid formula!') }
