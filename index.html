@@ -23,6 +23,7 @@
         Please input evaluation point <input type="text" id="evaluationPoint"><br>
         <input type="button" onclick="evaluateFormula()" value="Submit">
     </form>
+
     <p id="drawModel">
         <input type="button" onclick="drawModel()" value="Draw">
     </p>
@@ -31,7 +32,14 @@
         Symmetric <input type="checkbox" id="symmetricCheckBox" onclick="checkSymmetry()"> <br>
         Transitive <input type="checkbox" id="transitiveCheckBox" onclick="checkTransitivity()">
     </p>
+    <p id="result"></p>
     <h2>Language</h2>
+    <h3>Group notions</h3>
+    <ul>
+        <li>Everybody Knows: A conjunction of K<i>i</i> for all agents i in a group. EKabc if agents abc are to be
+            evaluated. EKab if only a and b. Example: EKabcp - a, b and c all know p. p[!]EKabcp - after an announcement
+            of p, everybody in a, b and c know p. </li>
+    </ul>
     <h3>Communication</h3>
     Syntax: [C!] followed by set of agents to communicate (publicly).
     If all agents communicate, every agent need to be explicitly mentioned in formula.
@@ -63,6 +71,7 @@
                 <li>Fix error when trying to evaluate a point that don't exist</li>
                 <li><s>Add more modalities (E, D, etc)</s></li>
                 <li>Look at cases where forced transitivity and symmetry may interact</li>
+                <li>Parser: alphabetize agents after input</li>
             </ul>
             <p>blablabl</p>
             <div id="my_graph"></div>

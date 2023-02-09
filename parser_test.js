@@ -6,6 +6,7 @@ import { publicAnnouncement } from "./dynamicOperations.js";
 import { publicCommunication } from "./dynamicOperations.js";
 import { cartesian } from "./furtherModalities.js";
 import { toD3js } from "./toD3Data.js";
+import { everybodyKnows } from "./groupNotions.js";
 //import * as d3 from "./node_modules/d3/dist/d3.js";
 
 //import relations1 from '/relations.json' assert {type: 'json'}
@@ -14,6 +15,7 @@ import { toD3js } from "./toD3Data.js";
 let relations = new Object();
 let worlds = new Object();
 let modelLoaded = false;
+let data
 //const relations = mooreanRelations;
 //const worlds = mooreanWorlds;
 const variableKey = 'prop';
@@ -24,7 +26,8 @@ const unaries = [
     { symbol: '<>', key: 'poss', precedence: 4 },
     { symbol: 'D', key: 'diff', precedence: 4 },
     { symbol: 'E', key: 'glob', precedence: 4 },
-    { symbol: '[C!]', key: 'comm', precedence: 4 }
+    { symbol: '[C!]', key: 'comm', precedence: 4 },
+    { symbol: 'EK', key: 'ekno', precedence: 4 }
 
 ];
 
@@ -55,12 +58,15 @@ window.handleSubmit = async function () {
     worlds = worldsReader.readAsText(uploadWorlds.files[0]);
     modelLoaded = true;
 
+
+
 }
 
 function logFileWorlds(event) {
     let str = event.target.result;
     let json = JSON.parse(str);
     worlds = json;
+
 
 }
 function logFileRelations(event) {
@@ -73,10 +79,13 @@ function logFileRelations(event) {
         unaries.push({ symbol: `<>${agent}`, key: `poss${agent}`, precedence: 4 });
     }
     for (const agent of powerSet(agents)) {
-        unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 })
+        unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 });
+        unaries.push({ symbol: `EK${agent}`, key: `ekno${agent}`, precedence: 4 })
         //{ symbol: '[C!]', key: 'comm', precedence: 4 }
     }
-    console.log(unaries)
+    console.log(worlds)
+
+
 
 }
 
@@ -95,7 +104,6 @@ window.getModel = async function () {
         unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 })
         //{ symbol: '[C!]', key: 'comm', precedence: 4 }
     }
-
 
 
 }
@@ -183,6 +191,11 @@ function truth(world, worlds, relations, parsedFormula) {
         const globalModel = cartesian(false);
         return (globalModel[world]).some(function (succState) { return truth(succState, worlds, relations, parsedFormula.diff) })
     }
+    else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'ekno') {
+        const unionizedModel = everybodyKnows(Object.keys(parsedFormula)[0].slice(4), worlds, relations)
+        //return truth(world, worlds, unionizedModel, parsedFormula[Object.keys(parsedFormula)[0]]);
+        return (unionizedModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]) })
+    }
 
     else { throw new Error('Invalid formula!') }
 }
@@ -219,22 +232,32 @@ var svg = d3.select("#my_graph")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-    .append("g")
+    //.append("g")
     .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+        "translate(" + margin.left + "," + margin.top + ")")
+
+
 
 //d3.json(toD3js(relations, worlds), function (data) {
-const data = toD3js(relations, worlds)
+
+
 //d3(toD3js(relations, worlds), function (data) {
 window.drawModel = async function () {
+    data = toD3js(relations, worlds)
+    console.log(data)
+
+
     console.log('draw')
     // Initialize the links
     var link = svg
-        .selectAll("line")
+        .selectAll(".links")
         .data(data["links"])
         .enter()
         .append("line")
+        //.attr('marker-end', 'url(#arrowhead)')
         .style("stroke", "#aaa")
+        .attr('marker-end', 'url(#arrowhead)')
+
 
     // Initialize the nodes
     var node = svg
@@ -245,13 +268,27 @@ window.drawModel = async function () {
         .attr("r", 20)
         .style("fill", "#69b3a2")
 
+    svg.append('svg:defs').append('svg:marker')
+        .attr('id', 'arrowhead')
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', '13')
+        //.attr('refY', '0')
+        .attr('markerUnits', 'strokeWidth')
+        .attr('markerWidth', '10')
+        .attr('markerHeight', '10')
+        .attr('orient', 'auto')
+        .attr('xoverflow', 'visible')
+        .append('svg:path')
+        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('fill', '#999')
+
     // Let's list the force we wanna apply on the network
     var simulation = d3.forceSimulation(data.nodes)                 // Force algorithm is applied to data.nodes
         .force("link", d3.forceLink()                               // This force provides links between nodes
             .id(function (d) { return d.id; })                     // This provide  the id of a node
             .links(data.links)                                    // and this the list of links
         )
-        .force("charge", d3.forceManyBody().strength(-1000))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
+        .force("charge", d3.forceManyBody().strength(-400))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
         .force("center", d3.forceCenter(width / 2, height / 2))     // This force attracts nodes to the center of the svg area
         .on("end", ticked);
 
