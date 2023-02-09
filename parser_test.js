@@ -6,18 +6,15 @@ import { publicAnnouncement } from "./dynamicOperations.js";
 import { publicCommunication } from "./dynamicOperations.js";
 import { cartesian } from "./furtherModalities.js";
 import { toD3js } from "./toD3Data.js";
-import { everybodyKnows, distributedKnowledge } from "./groupNotions.js";
+import { everybodyKnows, distributedKnowledge, commonKnowledge } from "./groupNotions.js";
 //import * as d3 from "./node_modules/d3/dist/d3.js";
 
-//import relations1 from '/relations.json' assert {type: 'json'}
 
 // from https://github.com/rkirsling/modallogic/blob/master/js/MPL.js
 let relations = new Object();
 let worlds = new Object();
 let modelLoaded = false;
-let data
-//const relations = mooreanRelations;
-//const worlds = mooreanWorlds;
+let data;
 const variableKey = 'prop';
 
 const unaries = [
@@ -28,7 +25,8 @@ const unaries = [
     { symbol: 'E', key: 'glob', precedence: 4 },
     { symbol: '[C!]', key: 'comm', precedence: 4 },
     { symbol: 'EK', key: 'ekno', precedence: 4 },
-    { symbol: 'DK', key: 'dist', precedence: 4 }
+    { symbol: 'DK', key: 'dist', precedence: 4 },
+    { symbol: 'CK', key: 'cokn', precedence: 4 }
 
 ];
 
@@ -82,8 +80,9 @@ function logFileRelations(event) {
     for (const agent of powerSet(agents)) {
         unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 });
         unaries.push({ symbol: `EK${agent}`, key: `ekno${agent}`, precedence: 4 });
-        unaries.push({ symbol: `DK${agent}`, key: `dist${agent}`, precedence: 4 })
-        //{ symbol: '[C!]', key: 'comm', precedence: 4 }
+        unaries.push({ symbol: `DK${agent}`, key: `dist${agent}`, precedence: 4 });
+        unaries.push({ symbol: `CK${agent}`, key: `cokn${agent}`, precedence: 4 })
+
     }
     console.log(worlds)
 
@@ -97,15 +96,6 @@ window.getModel = async function () {
     const model = JSON.parse(localStorage.getItem(`${name}`));
     relations = model['relations'];
     worlds = model['worlds'];
-    const agents = Object.keys(relations);
-    for (const agent of agents) {
-        unaries.push({ symbol: `K${agent}`, key: `nec${agent}`, precedence: 4 });
-        unaries.push({ symbol: `<>${agent}`, key: `poss${agent}`, precedence: 4 })
-    }
-    for (const agent of powerSet(agents)) {
-        unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 })
-        //{ symbol: '[C!]', key: 'comm', precedence: 4 }
-    }
 
 
 }
@@ -202,10 +192,14 @@ function truth(world, worlds, relations, parsedFormula) {
         const intersectedModel = distributedKnowledge(Object.keys(parsedFormula)[0].slice(4), worlds, relations);
         return (intersectedModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]) })
     }
+    else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'cokn') {
+        const commonKnowledgeModel = commonKnowledge(Object.keys(parsedFormula)[0].slice(4), worlds, relations);
+        return (commonKnowledgeModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]) })
+    }
 
     else { throw new Error('Invalid formula!') }
 }
-//let test = DELParser.parse('Kap')
+
 
 window.evaluateFormula = async function () {
 

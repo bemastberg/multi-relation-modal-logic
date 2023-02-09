@@ -1,5 +1,4 @@
 // Functions to calculate everybody knows, common and distributed knowledge
-//import { worlds, relations } from "./parser_test";
 
 function everybodyKnows(agents, worlds, relations) {
     let newRelation = new Object();
@@ -31,4 +30,24 @@ function distributedKnowledge(agents, worlds, relations) {
 
 }
 
-export { everybodyKnows, distributedKnowledge }
+function commonKnowledge(agents, worlds, relations) {
+    let relation = everybodyKnows(agents, worlds, relations)
+    let is_transitive = false;
+    do {
+        let changes = 0
+        for (const world of Object.keys(relation)) {
+            for (const successor of relation[world]) {
+                const toBeAdded = new Array([...relation[successor]].filter(x => !relation[world].includes(x)));
+                if (toBeAdded.size > 0) {
+                    relation[world].add(...toBeAdded);
+                    changes++;
+                }
+            }
+        }
+        if (changes === 0) { is_transitive = true }
+    }
+    while (!is_transitive)
+    return relation
+}
+
+export { everybodyKnows, distributedKnowledge, commonKnowledge }
