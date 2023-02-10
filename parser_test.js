@@ -172,7 +172,9 @@ function truth(world, worlds, relations, parsedFormula) {
         return (truth(world, announcedModel[0], announcedModel[1], parsedFormula.ann[1]))
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'comm') {
-        const communicatedModel = publicCommunication(Object.keys(relations), Object.keys(parsedFormula)[0].slice(4), worlds, relations);
+        console.log(Object.keys(parsedFormula)[0].slice(4))
+        console.log([...Object.keys(parsedFormula)[0].slice(4)].sort((a, b) => a.localeCompare(b)).join(""))
+        const communicatedModel = publicCommunication(Object.keys(relations), [...Object.keys(parsedFormula)[0].slice(4)].sort((a, b) => a.localeCompare(b)).join(""), worlds, relations);
         return truth(world, worlds, communicatedModel, parsedFormula[Object.keys(parsedFormula)[0]]);
     }
     else if (parsedFormula.glob) {
@@ -208,14 +210,7 @@ window.evaluateFormula = async function () {
     const formula = document.getElementById("formula").value;
     const evaluationPoint = parseInt(document.getElementById("evaluationPoint").value);
     const parsedFormula = DELParser.parse(formula);
-    // for (let world = 0; world < Object.keys(worlds).length; world++) {
-    //     //console.log(truth(world, worlds, relations, parsedFormula))
-    //     if (truth(world, worlds, relations, parsedFormula)) {
-    //         document.getElementById("result").innerHTML += `<span style='color:green'>Formula is true at world ${world}</span><br>`
-    //     } else {
-    //         document.getElementById("result").innerHTML += `<span style='color:red'>Formula is false at world ${world}</span><br>`
-    //     }
-    // }
+
     if (truth(evaluationPoint, worlds, relations, parsedFormula)) {
         document.getElementById("result").innerHTML += `<span style='color:green'>Formula is true at world ${evaluationPoint}</span><br>`
     } else {

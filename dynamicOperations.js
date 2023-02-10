@@ -37,18 +37,21 @@ function publicCommunication(agents, communicatingAgents, worlds, relations) {
     for (const agent of agents) {
         newRelation[agent] = new Object();
     }
-    // step one: intersect relations of communication agents
-    for (const world of Object.keys(worlds)) {
-        let toBeIntersected = new Array();
-        for (const agent of communicatingAgents) {
-            toBeIntersected.push([...relations[agent][world]]);
-        }
-        if (toBeIntersected.length > 0) {
-            var intersectedWorld = new Set(toBeIntersected.reduce((a, b) => a.filter(c => b.includes(c))));
-        } else { var intersectedWorld = new Array() }
-        communicatingAgentsRelation[world] = intersectedWorld;
-    };
-    // step two: intersect remaining agent's relations with communicating agents
+    if (communicatingAgents.length > 1)
+    // intersect relations of communication agents if more than one agent
+    {
+        for (const world of Object.keys(worlds)) {
+            let toBeIntersected = new Array();
+            for (const agent of communicatingAgents) {
+                toBeIntersected.push([...relations[agent][world]]);
+            }
+            if (toBeIntersected.length > 0) {
+                var intersectedWorld = new Set(toBeIntersected.reduce((a, b) => a.filter(c => b.includes(c))));
+            } else { var intersectedWorld = new Array() }
+            communicatingAgentsRelation[world] = intersectedWorld;
+        };
+    } else { communicatingAgentsRelation = relations[communicatingAgents] }
+    // intersect remaining agent's relations with communicating agents
     for (const world of Object.keys(worlds)) {
         for (const agent of communicatingAgents) {
             newRelation[agent][world] = communicatingAgentsRelation[world];
@@ -57,6 +60,7 @@ function publicCommunication(agents, communicatingAgents, worlds, relations) {
             newRelation[agent][world] = new Set(new Array(relations[agent][world], communicatingAgentsRelation[world]).reduce((a, b) => a.filter(c => b.includes(c))))
         }
     }
+
     return newRelation;
 }
 
