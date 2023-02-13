@@ -18,4 +18,23 @@ function cartesian(reflexive) {
     return cartesianRelations;
 }
 
-export { cartesian };
+function complement(worlds, relations) {
+    const cartesianProductOfDomain = cartesian(true);
+    let complemented = new Object();
+    const agents = Object.keys(relations);
+    for (const agent of agents) {
+        complemented[agent] = new Object()
+        for (const world of Object.keys(worlds)) {
+            const toBeAdded = new Array(cartesianProductOfDomain[world].filter(w => !relations[agent][world].includes(w)));
+            complemented[agent][world] = toBeAdded;
+            console.log(agent);
+            console.log(world);
+            console.log(toBeAdded);
+        }
+
+    }
+    return complemented
+
+}
+
+export { cartesian, complement };

@@ -4,7 +4,7 @@ import { powerSet } from "./powerSetOfAgents.js";
 import { forceReflexivity, forceSymmetry, forceTransitivity, forcedTransitions, removeForcedProperty } from "./forcedProperties.js";
 import { publicAnnouncement } from "./dynamicOperations.js";
 import { publicCommunication } from "./dynamicOperations.js";
-import { cartesian } from "./furtherModalities.js";
+import { cartesian, complement } from "./furtherModalities.js";
 import { toD3js } from "./toD3Data.js";
 import { everybodyKnows, distributedKnowledge, commonKnowledge } from "./groupNotions.js";
 //import * as d3 from "./node_modules/d3/dist/d3.js";
@@ -26,7 +26,8 @@ const unaries = [
     { symbol: '[C!]', key: 'comm', precedence: 4 },
     { symbol: 'EK', key: 'ekno', precedence: 4 },
     { symbol: 'DK', key: 'dist', precedence: 4 },
-    { symbol: 'CK', key: 'cokn', precedence: 4 }
+    { symbol: 'CK', key: 'cokn', precedence: 4 },
+    { symbol: '<|>', key: 'comp', precedence: 4 }
 
 ];
 
@@ -76,12 +77,14 @@ function logFileRelations(event) {
     for (const agent of agents) {
         unaries.push({ symbol: `K${agent}`, key: `nec${agent}`, precedence: 4 });
         unaries.push({ symbol: `<>${agent}`, key: `poss${agent}`, precedence: 4 });
+        unaries.push({ symbol: `<|>${agent}`, key: `comp${agent}`, precedence: 4 });
     }
     for (const agent of powerSet(agents)) {
         unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 });
         unaries.push({ symbol: `EK${agent}`, key: `ekno${agent}`, precedence: 4 });
         unaries.push({ symbol: `DK${agent}`, key: `dist${agent}`, precedence: 4 });
-        unaries.push({ symbol: `CK${agent}`, key: `cokn${agent}`, precedence: 4 })
+        unaries.push({ symbol: `CK${agent}`, key: `cokn${agent}`, precedence: 4 });
+
 
     }
     console.log(worlds)
@@ -185,18 +188,22 @@ function truth(world, worlds, relations, parsedFormula) {
         const globalModel = cartesian(false);
         return (globalModel[world]).some(function (succState) { return truth(succState, worlds, relations, parsedFormula.diff) })
     }
+    else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'comp') {
+        const complementModel = complement(worlds, relations);
+        return (complementModel[Object.keys(parsedFormula)[0].slice(4)][world]).some(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
+    }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'ekno') {
         const unionizedModel = everybodyKnows(Object.keys(parsedFormula)[0].slice(4), worlds, relations)
         //return truth(world, worlds, unionizedModel, parsedFormula[Object.keys(parsedFormula)[0]]);
-        return (unionizedModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]) })
+        return (unionizedModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'dist') {
         const intersectedModel = distributedKnowledge(Object.keys(parsedFormula)[0].slice(4), worlds, relations);
-        return (intersectedModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]) })
+        return (intersectedModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'cokn') {
         const commonKnowledgeModel = commonKnowledge(Object.keys(parsedFormula)[0].slice(4), worlds, relations);
-        return (commonKnowledgeModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]) })
+        return (commonKnowledgeModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
     }
 
     else { throw new Error('Invalid formula!') }
