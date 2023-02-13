@@ -1,6 +1,6 @@
 import { worlds, relations } from "./parser_test.js";
 
-
+// Cartesian used for modal operators E(xistential) and D(ifference), as well as to calculate the inaccessibility (complement) relation
 function cartesian(reflexive) {
     let cartesianRelations = new Object();
     for (const world of Object.keys(worlds)) {
@@ -34,7 +34,6 @@ function complement(worlds, relations) {
 
     }
     return complemented
-
 }
 
 export { cartesian, complement };

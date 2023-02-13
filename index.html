@@ -55,30 +55,34 @@
     Disjunction: |<br>
     Conjunction: &<br>
     Implication: -><br>
-    Equivalence: <-><br>
-        <h3>Modalities</h3>
-        Knowledge: K<i>i</i><br>
-        Diamond: <><i>i</i><br>
-            Global modality: E<br>
-            Difference modality: D<br>
-            <h3>Public announcements</h3>
-            <p>Implemented as a binary operator, where the left hand argument is the formula to be announced and the
-                right
-                hand
-                argument is the formula to be evaluated</p>
-            <p>Example: p[!]Kap: After p is announced, a will know p. (Typically written [p!]Kap or [!p]Kap)</p>
-            <h3>Todo:</h3>
-            <ul>
-                <li><s>Complete transitive closure</s></li>
-                <li>Fix error when trying to evaluate a point that don't exist</li>
-                <li><s>Add more modalities (E, D, etc)</s></li>
-                <li>Look at cases where forced transitivity and symmetry may interact</li>
-                <li>Parser: alphabetize agents after input</li>
-                <li><s>Bug: Communication not working with only one agent</s></li>
-            </ul>
-            <p>blablabl</p>
-            <div id="my_graph"></div>
-            <script></script>
+    Equivalence: &#60;->
+
+
+    <h3>Modalities</h3>
+    <i>i</i> = agent <i>i</i> &#8712; G (group of agents)<br>
+    Knowledge: K<i>i</i><br>
+    Diamond: &#60;><i>i</i><br>
+    Global modality: E<br>
+    Difference modality: D<br>
+    Inaccessibility modality: [|]<i>i</i>
+    <h3>Public announcements</h3>
+    <p>Implemented as a binary operator, where the left hand argument is the formula to be announced and the
+        right
+        hand
+        argument is the formula to be evaluated</p>
+    <p>Example: p[!]Kap: After p is announced, a will know p. (Typically written [p!]Kap or [!p]Kap)</p>
+    <h3>Todo:</h3>
+    <ul>
+        <li><s>Complete transitive closure</s></li>
+        <li>Fix error when trying to evaluate a point that don't exist</li>
+        <li><s>Add more modalities (E, D, etc)</s></li>
+        <li>Look at cases where forced transitivity and symmetry may interact</li>
+        <li>Parser: alphabetize agents after input</li>
+        <li><s>Bug: Communication not working with only one agent</s></li>
+    </ul>
+    <p>blablabl</p>
+    <div id="my_graph"></div>
+    <script></script>
 </body>
 
 </html>
