@@ -23,17 +23,32 @@ function complement(worlds, relations) {
     let complemented = new Object();
     const agents = Object.keys(relations);
     for (const agent of agents) {
-        complemented[agent] = new Object()
+        complemented[agent] = new Object();
         for (const world of Object.keys(worlds)) {
             const toBeAdded = new Array(cartesianProductOfDomain[world].filter(w => !relations[agent][world].includes(w)));
             complemented[agent][world] = toBeAdded;
-            console.log(agent);
-            console.log(world);
-            console.log(toBeAdded);
         }
 
     }
-    return complemented
+    return complemented;
+}
+// Function to create the inverse relation for each agent
+// Iterates through each transition and assigns the target world as source world (and vice verca)
+function inverse(worlds, relations) {
+    let invertedRelation = new Object();
+    const agents = Object.keys(relations);
+    for (const agent of agents) {
+        invertedRelation[agent] = new Object();
+        for (const world of Object.keys(worlds)) {
+            invertedRelation[agent][world] = new Array()
+        };
+        for (const world of Object.keys(worlds)) {
+            for (const successor of relations[agent][world]) {
+                invertedRelation[agent][successor].push(world);
+            }
+        }
+    }
+    return invertedRelation;
 }
 
-export { cartesian, complement };
+export { cartesian, complement, inverse };

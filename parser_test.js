@@ -4,7 +4,7 @@ import { powerSet } from "./powerSetOfAgents.js";
 import { forceReflexivity, forceSymmetry, forceTransitivity, forcedTransitions, removeForcedProperty } from "./forcedProperties.js";
 import { publicAnnouncement } from "./dynamicOperations.js";
 import { publicCommunication } from "./dynamicOperations.js";
-import { cartesian, complement } from "./furtherModalities.js";
+import { cartesian, complement, inverse } from "./furtherModalities.js";
 import { toD3js } from "./toD3Data.js";
 import { everybodyKnows, distributedKnowledge, commonKnowledge } from "./groupNotions.js";
 //import * as d3 from "./node_modules/d3/dist/d3.js";
@@ -27,7 +27,8 @@ const unaries = [
     { symbol: 'EK', key: 'ekno', precedence: 4 },
     { symbol: 'DK', key: 'dist', precedence: 4 },
     { symbol: 'CK', key: 'cokn', precedence: 4 },
-    { symbol: '[|]', key: 'inac', precedence: 4 }
+    { symbol: '[|]', key: 'inac', precedence: 4 },
+    { symbol: `[<-]`, key: `inve`, precedence: 4 }
 
 ];
 
@@ -75,22 +76,22 @@ function logFileRelations(event) {
     relations = json;
     const agents = Object.keys(relations);
     for (const agent of agents) {
-        unaries.push({ symbol: `K${agent}`, key: `nec${agent}`, precedence: 4 });
-        unaries.push({ symbol: `<>${agent}`, key: `poss${agent}`, precedence: 4 });
-        unaries.push({ symbol: `[|]${agent}`, key: `inac${agent}`, precedence: 4 });
+        unaries.push(
+            { symbol: `K${agent}`, key: `nec${agent}`, precedence: 4 },
+            { symbol: `<>${agent}`, key: `poss${agent}`, precedence: 4 },
+            { symbol: `[|]${agent}`, key: `inac${agent}`, precedence: 4 },
+            { symbol: `[<-]${agent}`, key: `inve${agent}`, precedence: 4 },
+        )
     }
     for (const agent of powerSet(agents)) {
-        unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 });
-        unaries.push({ symbol: `EK${agent}`, key: `ekno${agent}`, precedence: 4 });
-        unaries.push({ symbol: `DK${agent}`, key: `dist${agent}`, precedence: 4 });
-        unaries.push({ symbol: `CK${agent}`, key: `cokn${agent}`, precedence: 4 });
-
-
+        unaries.push(
+            { symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 },
+            { symbol: `EK${agent}`, key: `ekno${agent}`, precedence: 4 },
+            { symbol: `DK${agent}`, key: `dist${agent}`, precedence: 4 },
+            { symbol: `CK${agent}`, key: `cokn${agent}`, precedence: 4 },
+        )
     }
-    console.log(worlds)
-
-
-
+    console.log(unaries)
 }
 
 
@@ -191,6 +192,12 @@ function truth(world, worlds, relations, parsedFormula) {
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'inac') {
         const complementModel = complement(worlds, relations);
         return (complementModel[Object.keys(parsedFormula)[0].slice(4)][world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
+    }
+    else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'inve') {
+        const inverseModel = inverse(worlds, relations);
+        //console.log(inverseModel)
+        //console.log(Object.keys(parsedFormula)[0].slice(4))
+        return (inverseModel[Object.keys(parsedFormula)[0].slice(4)][world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'ekno') {
         const unionizedModel = everybodyKnows(Object.keys(parsedFormula)[0].slice(4), worlds, relations)
