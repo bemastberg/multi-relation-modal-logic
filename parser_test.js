@@ -27,7 +27,7 @@ const unaries = [
     { symbol: 'EK', key: 'ekno', precedence: 4 },
     { symbol: 'DK', key: 'dist', precedence: 4 },
     { symbol: 'CK', key: 'cokn', precedence: 4 },
-    { symbol: '<|>', key: 'comp', precedence: 4 }
+    { symbol: '[|]', key: 'inac', precedence: 4 }
 
 ];
 
@@ -77,7 +77,7 @@ function logFileRelations(event) {
     for (const agent of agents) {
         unaries.push({ symbol: `K${agent}`, key: `nec${agent}`, precedence: 4 });
         unaries.push({ symbol: `<>${agent}`, key: `poss${agent}`, precedence: 4 });
-        unaries.push({ symbol: `<|>${agent}`, key: `comp${agent}`, precedence: 4 });
+        unaries.push({ symbol: `[|]${agent}`, key: `inac${agent}`, precedence: 4 });
     }
     for (const agent of powerSet(agents)) {
         unaries.push({ symbol: `[C!]${agent}`, key: `comm${agent}`, precedence: 4 });
@@ -188,9 +188,9 @@ function truth(world, worlds, relations, parsedFormula) {
         const globalModel = cartesian(false);
         return (globalModel[world]).some(function (succState) { return truth(succState, worlds, relations, parsedFormula.diff) })
     }
-    else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'comp') {
+    else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'inac') {
         const complementModel = complement(worlds, relations);
-        return (complementModel[Object.keys(parsedFormula)[0].slice(4)][world]).some(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
+        return (complementModel[Object.keys(parsedFormula)[0].slice(4)][world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'ekno') {
         const unionizedModel = everybodyKnows(Object.keys(parsedFormula)[0].slice(4), worlds, relations)
