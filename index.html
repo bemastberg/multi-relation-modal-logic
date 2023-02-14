@@ -4,8 +4,10 @@
 <head>
     <script src="./parser_test.js" type="module"></script>
     <script src="./forcedProperties.js" type="module"></script>
+    //
     <script>var exports = {};</script>
-    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
 
 </head>
 
@@ -25,14 +27,14 @@
     </form>
 
     <p id="drawModel">
-        <input type="button" onclick="drawModel()" value="Draw">
+        <input type="button" onclick="createGraph(false)" value="Draw">
     </p>
     <p id="showmodel">
         Reflexive <input type="checkbox" id="reflexiveCheckBox" onclick="checkReflexivity()"><br>
         Symmetric <input type="checkbox" id="symmetricCheckBox" onclick="checkSymmetry()"> <br>
         Transitive <input type="checkbox" id="transitiveCheckBox" onclick="checkTransitivity()">
     </p>
-    <p id="result"></p>
+    <svg id="graph" width="600" height="600"></svg>
     <h2>Language</h2>
     <h3>Group notions</h3>
     <ul>
@@ -83,7 +85,7 @@
     </ul>
     <p>blablabl</p>
     <div id="my_graph"></div>
-    <script></script>
+
 </body>
 
 </html>

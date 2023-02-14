@@ -7,15 +7,14 @@ function toD3js(relations, worlds) {
     data["nodes"] = new Array();
     data["links"] = new Array();
     for (const world of Object.keys(worlds)) {
-        data["nodes"].push({ "id": world, "name": `w${world}` });
+        data["nodes"].push({ "id": `w${world}`, "prop": worlds[world], "truth": null });
     }
     for (const agent of Object.keys(relations)) {
         for (const world of Object.keys(worlds)) {
             for (const successor of relations[agent][world]) {
-                data["links"].push({ "source": world, "target": successor, "agent": agent })
+                data["links"].push({ "source": `w${world}`, "target": `w${successor}`, "agent": agent })
             }
         }
-        console.log(data)
     }
     return data;
 }
