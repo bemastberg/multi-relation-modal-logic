@@ -59,8 +59,6 @@ window.handleSubmit = async function () {
     worlds = worldsReader.readAsText(uploadWorlds.files[0]);
     modelLoaded = true;
 
-
-
 }
 
 function logFileWorlds(event) {
@@ -92,6 +90,7 @@ function logFileRelations(event) {
         )
     }
     console.log(unaries)
+
 }
 
 
@@ -227,8 +226,10 @@ window.evaluateFormula = async function () {
 
     if (truth(evaluationPoint, worlds, relations, parsedFormula)) {
         document.getElementById("result").innerHTML += `<span style='color:green'>Formula is true at world ${evaluationPoint}</span><br>`
+        changeNodeColor(`w${evaluationPoint}`, 'limegreen');
     } else {
         document.getElementById("result").innerHTML += `<span style='color:red'>Formula is false at world ${evaluationPoint}</span><br>`
+        changeNodeColor(`w${evaluationPoint}`, 'red');
     }
 
 }
@@ -264,6 +265,14 @@ var simulation = d3.forceSimulation()
 
 
 //window.createGraph = async function (error) {
+window.changeNodeColor = async function (node, color) {
+    console.log(svg)
+    svg.selectAll('circle')
+        .attr('fill', "#1f77b4")
+    svg.selectAll(`#${node}`)
+        .attr('fill', color);
+}
+
 window.createGraph = async function (error) {
     if (error) throw error;
     let graph = toD3js(relations, worlds);
@@ -285,6 +294,7 @@ window.createGraph = async function (error) {
         .data(graph.nodes)
         .enter().append("circle")
         .attr("r", 20)
+        .attr("id", function (d) { return d.id; })
         .attr("fill", function (d) { if (d.root == "true") return color(d.root); return color(d.type); })
         .call(d3.drag()
             .on("start", dragstarted)
@@ -297,7 +307,7 @@ window.createGraph = async function (error) {
 
     text.append("text")
         .attr("x", 30)
-        .attr("y", ".31em")
+        .attr("y", "1em")
         .style("font-family", "sans-serif")
         .style("font-size", "0.7em")
         .text(function (d) { return d.id; });
@@ -308,6 +318,17 @@ window.createGraph = async function (error) {
         .style("font-family", "sans-serif")
         .style("font-size", "0.7em")
         .text(function (d) { return d.prop; });
+
+    var textEdges = svg.append("g").attr("class", "labels").selectAll("g")
+        .data(graph["links"])
+        .enter().append("g")
+
+    textEdges.append("text")
+        .attr("x", 30)
+        .attr("y", 0)
+        .style("font-family", "sans-serif")
+        .style("font-size", "0.7em")
+        .text(function (d) { return d.agent })
 
 
     node.on("click", function (d) {
@@ -338,7 +359,10 @@ window.createGraph = async function (error) {
             .attr("cy", function (d) { return d.y; });
 
         text
-            .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; })
+            .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+        textEdges
+            .attr("transform", function (d) { return "translate(" + (d.target.x + d.source.x) / 2 + "," + (d.target.y + d.source.y) / 2 + ")"; })
+
 
 
     }
