@@ -109,38 +109,38 @@ let checkboxTransitive = document.getElementById("transitiveCheckBox");
 
 window.checkReflexivity = async function () {
     if (checkboxReflexive.checked === true) {
-        forceReflexivity();
-        //document.getElementById('result').innerHTML += forceReflexivity();
+        relations = forceReflexivity();
     }
     if (checkboxReflexive.checked !== true) {
-        removeForcedProperty("Reflexive");
+        relations = removeForcedProperty("Reflexive");
     }
-    console.log(relations)
+    //console.log(relations)
+    createGraph(false);
 }
 window.checkSymmetry = async function () {
     if (checkboxSymmetric.checked === true) {
-        forceSymmetry();
+        relations = forceSymmetry();
         if (checkboxTransitive.checked === true) {
-            forceTransitivity();
+            relations = forceTransitivity();
         }
-        //document.getElementById('result').innerHTML += forceSymmetry();
-
     }
     if (checkboxSymmetric.checked !== true) {
-        removeForcedProperty("Symmetric");
+        relations = removeForcedProperty("Symmetric");
     }
+    console.log(relations)
+    createGraph(false);
 }
 window.checkTransitivity = async function () {
     if (checkboxTransitive.checked === true) {
-        forceTransitivity();
+        relations = forceTransitivity();
         if (checkboxSymmetric.checked === true) {
-            forceSymmetry();
+            relations = forceSymmetry();
         }
-        //document.getElementById('result').innerHTML += forceTransitivity();
     }
     if (checkboxTransitive.checked !== true) {
-        removeForcedProperty("Transitive");
+        relations = removeForcedProperty("Transitive");
     }
+    createGraph(false);
 }
 
 
@@ -242,7 +242,7 @@ svg = svg.call(d3.zoom().on("zoom", zoomed)).append("g");
 svg.append("defs").append("marker")
     .attr("id", "arrow")
     .attr("viewBox", "0 -5 10 10")
-    .attr("refX", 20)
+    .attr("refX", 32)
     .attr("refY", 0)
     .attr("markerWidth", 8)
     .attr("markerHeight", 8)
@@ -270,19 +270,21 @@ window.changeNodeColor = async function (node, color) {
 }
 
 window.drawAnnouncedModel = async function () {
-    const DELParser = new FormulaParser(variableKey, unaries, binaries)
+    const DELParser = new FormulaParser(variableKey, unaries, binaries);
     const formula = document.getElementById("formula").value;
     const parsedFormula = DELParser.parse(formula);
     const announcedModel = publicAnnouncement(parsedFormula, worlds, relations);
-    // console.log(announcedModel[0])
-    // console.log(announcedModel[1])
-    relations = announcedModel[1]
-    worlds = announcedModel[0]
-    createGraph(false)
+    relations = announcedModel[1];
+    worlds = announcedModel[0];
+    createGraph(false);
 }
-// window.drawGraph = async function () {
-//     createGraph(relations, worlds)
-// }
+
+window.drawCommunicatedModel = async function () {
+    const DELParser = new FormulaParser(variableKey, unaries, binaries);
+    const communicatingAgents = document.getElementById("communicatingAgents").value;
+    relations = publicCommunication(Object.keys(relations), communicatingAgents, worlds, relations);
+    createGraph(false);
+}
 window.createGraph = async function (error, r = relations, w = worlds) {
     if (error) throw error;
     svg.selectAll('g')
