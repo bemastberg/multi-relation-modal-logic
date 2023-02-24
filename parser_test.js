@@ -145,7 +145,6 @@ window.checkTransitivity = async function () {
 
 
 function truth(world, worlds, relations, parsedFormula) {
-    //console.log(parsedFormula)
     if (parsedFormula.prop) {
         return (worlds[world].includes(parsedFormula.prop))
     }
@@ -175,8 +174,8 @@ function truth(world, worlds, relations, parsedFormula) {
         return (truth(world, announcedModel[0], announcedModel[1], parsedFormula.ann[1]))
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'comm') {
-        console.log(Object.keys(parsedFormula)[0].slice(4))
-        console.log([...Object.keys(parsedFormula)[0].slice(4)].sort((a, b) => a.localeCompare(b)).join(""))
+        //console.log(Object.keys(parsedFormula)[0].slice(4))
+        //console.log([...Object.keys(parsedFormula)[0].slice(4)].sort((a, b) => a.localeCompare(b)).join(""))
         const communicatedModel = publicCommunication(Object.keys(relations), [...Object.keys(parsedFormula)[0].slice(4)].sort((a, b) => a.localeCompare(b)).join(""), worlds, relations);
         return truth(world, worlds, communicatedModel, parsedFormula[Object.keys(parsedFormula)[0]]);
     }
@@ -194,13 +193,10 @@ function truth(world, worlds, relations, parsedFormula) {
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'inve') {
         const inverseModel = inverse(worlds, relations);
-        //console.log(inverseModel)
-        //console.log(Object.keys(parsedFormula)[0].slice(4))
         return (inverseModel[Object.keys(parsedFormula)[0].slice(4)][world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'ekno') {
         const unionizedModel = everybodyKnows(Object.keys(parsedFormula)[0].slice(4), worlds, relations)
-        //return truth(world, worlds, unionizedModel, parsedFormula[Object.keys(parsedFormula)[0]]);
         return (unionizedModel[world]).every(function (succState) { return truth(succState, worlds, relations, parsedFormula[Object.keys(parsedFormula)[0]]); })
     }
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'dist') {
@@ -275,6 +271,8 @@ window.changeNodeColor = async function (node, color) {
 
 window.createGraph = async function (error) {
     if (error) throw error;
+    svg.selectAll('g')
+        .remove();
     let graph = toD3js(relations, worlds);
     console.log(graph);
 
