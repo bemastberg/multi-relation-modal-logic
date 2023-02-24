@@ -17,8 +17,6 @@ function publicAnnouncement(formula, worlds, relations) {
                 newRelation[agent][world] = new Array();
 
                 for (const successor of relations[agent][world]) {
-                    console.log(successor);
-                    console.log(Object.keys(newWorlds));
                     if (Object.keys(newWorlds).includes(String(successor))) {
                         newRelation[agent][world].push(successor);
                     }

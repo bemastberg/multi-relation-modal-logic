@@ -262,18 +262,32 @@ var simulation = d3.forceSimulation()
 
 //window.createGraph = async function (error) {
 window.changeNodeColor = async function (node, color) {
-    console.log(svg)
+    //console.log(svg)
     svg.selectAll('circle')
         .attr('fill', "#1f77b4")
     svg.selectAll(`#${node}`)
         .attr('fill', color);
 }
 
-window.createGraph = async function (error) {
+window.drawAnnouncedModel = async function () {
+    const DELParser = new FormulaParser(variableKey, unaries, binaries)
+    const formula = document.getElementById("formula").value;
+    const parsedFormula = DELParser.parse(formula);
+    const announcedModel = publicAnnouncement(parsedFormula, worlds, relations);
+    // console.log(announcedModel[0])
+    // console.log(announcedModel[1])
+    relations = announcedModel[1]
+    worlds = announcedModel[0]
+    createGraph(false)
+}
+// window.drawGraph = async function () {
+//     createGraph(relations, worlds)
+// }
+window.createGraph = async function (error, r = relations, w = worlds) {
     if (error) throw error;
     svg.selectAll('g')
         .remove();
-    let graph = toD3js(relations, worlds);
+    let graph = toD3js(r, w);
     console.log(graph);
 
     var link = svg.append("g")
