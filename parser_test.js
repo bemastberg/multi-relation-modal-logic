@@ -236,6 +236,7 @@ var svg = d3.select("svg");
 
 var width = svg.attr("width");
 var height = svg.attr("height");
+var radius = 6;
 
 svg = svg.call(d3.zoom().on("zoom", zoomed)).append("g");
 
@@ -255,7 +256,7 @@ var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function (d) { return d.id; }))
-    .force("charge", d3.forceManyBody())
+    .force("charge", d3.forceManyBody().strength(-100))
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 
@@ -338,8 +339,8 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         .enter().append("g")
 
     textEdges.append("text")
-        .attr("x", 30)
-        .attr("y", 0)
+        .attr("x", -30)
+        .attr("y", 15)
         .style("font-family", "sans-serif")
         .style("font-size", "0.7em")
         .text(function (d) { return d.agent })
@@ -369,8 +370,13 @@ window.createGraph = async function (error, r = relations, w = worlds) {
             .attr("y2", function (d) { return d.target.y; });
 
         node
-            .attr("cx", function (d) { return d.x; })
-            .attr("cy", function (d) { return d.y; });
+            //make sure the nodes don't leave the bounds
+            .attr("cx", function (d) {
+                return (d.x = Math.max(radius, Math.min(width - radius, d.x)));
+            })
+            .attr("cy", function (d) {
+                return (d.y = Math.max(radius, Math.min(height - radius, d.y)));
+            })
 
         text
             .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
@@ -384,7 +390,7 @@ window.createGraph = async function (error, r = relations, w = worlds) {
 
 
 function dragstarted(d) {
-    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    if (!d3.event.active) simulation.alphaTarget(0.1).restart();
     d.fx = d.x;
     d.fy = d.y;
 }
