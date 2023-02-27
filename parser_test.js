@@ -416,7 +416,7 @@ const nodeColors = {
     false: "#FF0000"
 }
 
-createGraph(false);
+
 export { relations, truth, worlds }
 
 

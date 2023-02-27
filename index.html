@@ -4,91 +4,107 @@
 <head>
     <script src="./parser_test.js" type="module"></script>
     <script src="./forcedProperties.js" type="module"></script>
-    //
+
     <script>var exports = {};</script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css" type="text/css">
 
 </head>
 
 <body>
-    <p><a href="createmodel.html">Create your own model here</a></p>
+    <div class="container">
+        <div class="left-menu">
+            <ul>
+                <li><a href="https://github.com/bemastberg/dynamic-epistemic-logic-test">Github repo</a></li>
+                <li><a href="#language">Language</a></li>
+            </ul>
+        </div>
+        <div class="content">
+            <p><a href="createmodel.html">Create your own model here</a></p>
 
-    <form id="getmodel">
-        Input model worlds (in json format) <input type="file" id="inputworlds"><br>
-        Input model relations (in json format) <input type="file" id="inputrelations" accept=".json"><br>
-        <!-- <input type='button' value="Upload"> -->
-        <button type="button" onclick="handleSubmit()" id="uploadButton">Upload</button>
-    </form>
-    <form id="frm1">
-        <span id="formulaInput">Please input your formula <input type="text" id="formula"></span><br>
-        Please input evaluation point <input type="text" id="evaluationPoint"><br>
-        <input type="button" onclick="evaluateFormula()" value="Evaluate formula"><input type="button"
-            onclick="drawAnnouncedModel()" value="Announce Formula"><input type="button"
-            onclick="drawCommunicatedModel()" value="Communicate (enter agents)"><input type="text"
-            id="communicatingAgents">
-    </form>
+            <form id="getmodel">
+                Input model worlds (in json format) <input type="file" id="inputworlds"><br>
+                Input model relations (in json format) <input type="file" id="inputrelations" accept=".json"><br>
+                <!-- <input type='button' value="Upload"> -->
+                <button type="button" onclick="handleSubmit()" id="uploadButton">Upload</button>
+            </form>
+            <form id="frm1">
+                <span id="formulaInput">Please input your formula <input type="text" id="formula"></span><br>
+                Please input evaluation point <input type="text" id="evaluationPoint"><br>
+                <input type="button" onclick="evaluateFormula()" value="Evaluate formula"><input type="button"
+                    onclick="drawAnnouncedModel()" value="Announce Formula"><input type="button"
+                    onclick="drawCommunicatedModel()" value="Communicate (enter agents)"><input type="text"
+                    id="communicatingAgents">
+            </form>
 
-    <p id="drawModel">
-        <input type="button" onclick="createGraph(false)" value="Draw">
-    </p>
-    <p id="showmodel">
-        Reflexive <input type="checkbox" id="reflexiveCheckBox" onclick="checkReflexivity()"><br>
-        Symmetric <input type="checkbox" id="symmetricCheckBox" onclick="checkSymmetry()"> <br>
-        Transitive <input type="checkbox" id="transitiveCheckBox" onclick="checkTransitivity()">
-    </p>
-    <p id="result"></p>
-    <svg id="graph" width="600" height="600"></svg>
-    <h2>Language</h2>
-    <h3>Group notions</h3>
-    <ul>
-        <li>Everybody Knows: A conjunction of K<i>i</i> for all agents i in a group. EKabc if agents abc are to be
-            evaluated. EKab if only a and b. Example: EKabcp - a, b and c all know p. p[!]EKabcp - after an announcement
-            of p, everybody in a, b and c know p. </li>
-        <li>Distributed knowledge: The intersection of relations of given agents. DKabp - p is distributed knowledge
-            among agents a and b. (DKabp is true if and only if [C!]abp)</li>
-    </ul>
-    <h3>Communication</h3>
-    Syntax: [C!] followed by set of agents to communicate (publicly).
-    If all agents communicate, every agent need to be explicitly mentioned in formula.
-    Example:
-    [C!]a: agent a communicates everything she knows
-    [C!]ab: agents a and b communicate everything they know
+            <p id="drawModel">
+                <input type="button" onclick="createGraph(false)" value="Draw">
+            </p>
+            <p id="showmodel">
+                Reflexive <input type="checkbox" id="reflexiveCheckBox" onclick="checkReflexivity()"><br>
+                Symmetric <input type="checkbox" id="symmetricCheckBox" onclick="checkSymmetry()"> <br>
+                Transitive <input type="checkbox" id="transitiveCheckBox" onclick="checkTransitivity()">
+            </p>
+            <p id="result"></p>
+            <svg id="graph" width="600" height="600"></svg>
 
-    <h3>Basic Propositional language</h3>
-    Propositional variables: p,q,r,s, etc. Any lower case letter (probably nice to avoid agent names)<br>
-    Negation: ~<br>
-    Disjunction: |<br>
-    Conjunction: &<br>
-    Implication: -><br>
-    Equivalence: &#60;->
+            <a id="language">
+                <h2>Language</h2>
+            </a>
+            <h3>Group notions</h3>
+            <ul>
+                <li>Everybody Knows: A conjunction of K<i>i</i> for all agents i in a group. EKabc if agents abc are to
+                    be
+                    evaluated. EKab if only a and b. Example: EKabcp - a, b and c all know p. p[!]EKabcp - after an
+                    announcement
+                    of p, everybody in a, b and c know p. </li>
+                <li>Distributed knowledge: The intersection of relations of given agents. DKabp - p is distributed
+                    knowledge
+                    among agents a and b. (DKabp is true if and only if [C!]abp)</li>
+            </ul>
+            <h3>Communication</h3>
+            Syntax: [C!] followed by set of agents to communicate (publicly).
+            If all agents communicate, every agent need to be explicitly mentioned in formula.
+            Example:
+            [C!]a: agent a communicates everything she knows
+            [C!]ab: agents a and b communicate everything they know
+
+            <h3>Basic Propositional language</h3>
+            Propositional variables: p,q,r,s, etc. Any lower case letter (probably nice to avoid agent names)<br>
+            Negation: ~<br>
+            Disjunction: |<br>
+            Conjunction: &<br>
+            Implication: -><br>
+            Equivalence: &#60;->
 
 
-    <h3>Modalities</h3>
-    <i>i</i>: agent <i>i</i> &#8712; G (group of agents)<br>
-    Knowledge: K<i>i</i><br>
-    Diamond: &#60;><i>i</i><br>
-    Global modality: E<br>
-    Difference modality: D<br>
-    Inaccessibility modality: [|]<i>i</i><br>
-    Inverse modality: [&#60;-]<i>i</i>
-    <h3>Public announcements</h3>
-    <p>Implemented as a binary operator, where the left hand argument is the formula to be announced and the
-        right
-        hand
-        argument is the formula to be evaluated</p>
-    <p>Example: p[!]Kap: After p is announced, a will know p. (Typically written [p!]Kap or [!p]Kap)</p>
-    <h3>Todo:</h3>
-    <ul>
-        <li><s>Complete transitive closure</s></li>
-        <li>Fix error when trying to evaluate a point that don't exist</li>
-        <li><s>Add more modalities (E, D, etc)</s></li>
-        <li>Look at cases where forced transitivity and symmetry may interact</li>
-        <li>Parser: alphabetize agents after input</li>
-        <li><s>Bug: Communication not working with only one agent</s></li>
-    </ul>
-    <p>blablabl</p>
-    <div id="my_graph"></div>
+            <h3>Modalities</h3>
+            <i>i</i>: agent <i>i</i> &#8712; G (group of agents)<br>
+            Knowledge: K<i>i</i><br>
+            Diamond: &#60;><i>i</i><br>
+            Global modality: E<br>
+            Difference modality: D<br>
+            Inaccessibility modality: [|]<i>i</i><br>
+            Inverse modality: [&#60;-]<i>i</i>
+            <h3>Public announcements</h3>
+            <p>Implemented as a binary operator, where the left hand argument is the formula to be announced and the
+                right
+                hand
+                argument is the formula to be evaluated</p>
+            <p>Example: p[!]Kap: After p is announced, a will know p. (Typically written [p!]Kap or [!p]Kap)</p>
+            <h3>Todo:</h3>
+            <ul>
+                <li><s>Complete transitive closure</s></li>
+                <li>Fix error when trying to evaluate a point that don't exist</li>
+                <li><s>Add more modalities (E, D, etc)</s></li>
+                <li>Look at cases where forced transitivity and symmetry may interact</li>
+                <li>Parser: alphabetize agents after input</li>
+                <li><s>Bug: Communication not working with only one agent</s></li>
+            </ul>
+            <p>blablabl</p>
+            <div id="my_graph"></div>
+        </div>
+    </div>
 
 </body>
 
