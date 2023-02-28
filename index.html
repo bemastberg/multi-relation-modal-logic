@@ -35,17 +35,35 @@
                     id="communicatingAgents">
             </form>
 
-            <p id="drawModel">
+            <p>
                 <input type="button" onclick="createGraph(false)" value="Draw">
             </p>
-            <p id="showmodel">
-                Reflexive <input type="checkbox" id="reflexiveCheckBox" onclick="checkReflexivity()"><br>
-                Symmetric <input type="checkbox" id="symmetricCheckBox" onclick="checkSymmetry()"> <br>
-                Transitive <input type="checkbox" id="transitiveCheckBox" onclick="checkTransitivity()">
+            <p>
+            <ul>
+                <li class="properties">Reflexive <input type="checkbox" id="reflexiveCheckBox"
+                        onclick="checkReflexivity()"></li>
+                <li class="properties">Symmetric <input type="checkbox" id="symmetricCheckBox"
+                        onclick="checkSymmetry()"></li>
+                <li class="properties">Transitive <input type="checkbox" id="transitiveCheckBox"
+                        onclick="checkTransitivity()"></li>
+            </ul>
             </p>
-            <p id="result"></p>
+
+
             <svg id="graph" width="600" height="600"></svg>
 
+            <p id="result">
+            <table id="t-result">
+                <tr>
+                    <th>True worlds</th>
+                    <th>False worlds</th>
+                </tr>
+                <tr>
+                    <td id="true"></td>
+                    <td id="false"></td>
+                </tr>
+            </table>
+            </p>
             <a id="language">
                 <h2>Language</h2>
             </a>

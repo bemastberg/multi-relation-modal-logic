@@ -221,9 +221,11 @@ window.evaluateFormula = async function () {
     for (const world of Object.keys(worlds)) {
         if (truth(world, worlds, relations, parsedFormula)) {
             document.getElementById("result").innerHTML += `<span style='color:green'>Formula is true at world ${world}</span><br>`
+            document.getElementById("true").innerHTML += `w${world}<br>`
             changeNodeColor(`w${world}`, 'limegreen');
         } else {
             document.getElementById("result").innerHTML += `<span style='color:red'>Formula is false at world ${world}</span><br>`
+            document.getElementById("false").innerHTML += `w${world}<br>`
             changeNodeColor(`w${world}`, 'red');
         }
     }

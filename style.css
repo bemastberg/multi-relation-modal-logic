@@ -2,6 +2,14 @@ body {
     background-color: aquamarine;
 }
 
+ul {
+    list-style-type: none;
+}
+
+li.properties {
+    float: left;
+}
+
 .container {
     margin: 25px;
     width: 700;
@@ -28,6 +36,13 @@ body {
 .nodes circle {
     stroke: #333;
     stroke-width: 1.5px;
+}
+
+table,
+th,
+td {
+    border: 1px dashed black;
+    border-collapse: collapse
 }
 
 #graph {
