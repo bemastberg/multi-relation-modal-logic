@@ -217,15 +217,15 @@ window.evaluateFormula = async function () {
     const DELParser = new FormulaParser(variableKey, unaries, binaries)
     document.getElementById("result").innerHTML = ''
     const formula = document.getElementById("formula").value;
-    const evaluationPoint = parseInt(document.getElementById("evaluationPoint").value);
     const parsedFormula = DELParser.parse(formula);
-
-    if (truth(evaluationPoint, worlds, relations, parsedFormula)) {
-        document.getElementById("result").innerHTML += `<span style='color:green'>Formula is true at world ${evaluationPoint}</span><br>`
-        changeNodeColor(`w${evaluationPoint}`, 'limegreen');
-    } else {
-        document.getElementById("result").innerHTML += `<span style='color:red'>Formula is false at world ${evaluationPoint}</span><br>`
-        changeNodeColor(`w${evaluationPoint}`, 'red');
+    for (const world of Object.keys(worlds)) {
+        if (truth(world, worlds, relations, parsedFormula)) {
+            document.getElementById("result").innerHTML += `<span style='color:green'>Formula is true at world ${world}</span><br>`
+            changeNodeColor(`w${world}`, 'limegreen');
+        } else {
+            document.getElementById("result").innerHTML += `<span style='color:red'>Formula is false at world ${world}</span><br>`
+            changeNodeColor(`w${world}`, 'red');
+        }
     }
 
 }
@@ -263,9 +263,6 @@ var simulation = d3.forceSimulation()
 
 //window.createGraph = async function (error) {
 window.changeNodeColor = async function (node, color) {
-    //console.log(svg)
-    svg.selectAll('circle')
-        .attr('fill', "#1f77b4")
     svg.selectAll(`#${node}`)
         .attr('fill', color);
 }
