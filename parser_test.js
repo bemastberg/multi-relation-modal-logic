@@ -238,7 +238,7 @@ var width = svg.attr("width");
 var height = svg.attr("height");
 var radius = 6;
 
-svg = svg.call(d3.zoom().on("zoom", zoomed)).append("g");
+//svg = svg.call(d3.zoom().on("zoom", zoomed)).append("g");
 
 svg.append("defs").append("marker")
     .attr("id", "arrow")
@@ -289,6 +289,11 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         .remove();
     let graph = toD3js(r, w);
     console.log(graph);
+
+    var canvas = svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", "pink")
 
     var link = svg.append("g")
         .attr("class", "links")
@@ -347,6 +352,7 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         console.log("clicked", d.id);
     });
 
+    canvas.on("click", function () { return createNode() });
 
     node.append("title")
         .text(function (d) { return d.id; });
@@ -358,7 +364,19 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     simulation.force("link")
         .links(graph.links);
 
-
+    function createNode() {
+        console.log("clicked")
+        node.append("circle")
+            .data({ "id": `w${Object.keys(worlds).length}`, "prop": "", "truth": null })
+            .enter().append("circle")
+            .attr("r", 20)
+            .attr("id", function (d) { return d.id; })
+            .attr("fill", function (d) { if (d.root == "true") return color(d.root); return color(d.type); })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+    }
     function ticked() {
         link
             .attr("x1", function (d) { return d.source.x; })
@@ -403,15 +421,10 @@ function dragended(d) {
     d.fy = null;
 }
 
-function zoomed() {
-    svg.attr("transform", "translate(" + d3.event.transform.x + "," + d3.event.transform.y + ")" + " scale(" + d3.event.transform.k + ")");
-}
-
-const nodeColors = {
-    null: "#00F7FF",
-    true: "#64FF00",
-    false: "#FF0000"
-}
+// function zoomed() {
+//     //svg.attr("transform", "translate(" + d3.event.transform.x + "," + d3.event.transform.y + ")" + " scale(" + d3.event.transform.k + ")");
+//     svg.attr("transform", "translate(" + d3.event.translate + ")");
+// }
 
 
 export { relations, truth, worlds }
