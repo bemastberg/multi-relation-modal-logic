@@ -6,6 +6,10 @@ ul {
     list-style-type: none;
 }
 
+div#properties {
+    margin: auto;
+}
+
 li.properties {
     float: left;
 }
@@ -49,4 +53,5 @@ td {
     border: 1px solid black;
     border-radius: 15px;
     background-color: pink;
+    margin: auto
 }

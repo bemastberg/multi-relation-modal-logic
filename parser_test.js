@@ -255,10 +255,13 @@ svg.append("defs").append("marker")
     .attr("fill", "#FF5733");
 
 var color = d3.scaleOrdinal(d3.schemeCategory10);
-
+var canvas = svg.append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("fill", "pink")
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function (d) { return d.id; }))
-    .force("charge", d3.forceManyBody().strength(-100))
+    .force("charge", d3.forceManyBody().strength(-1000))
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 
@@ -291,11 +294,6 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         .remove();
     let graph = toD3js(r, w);
     console.log(graph);
-
-    var canvas = svg.append("rect")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("fill", "pink")
 
     var link = svg.append("g")
         .attr("class", "links")
@@ -354,10 +352,7 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         console.log("clicked", d.id);
     });
 
-    canvas.on("click", function () { return createNode() });
-
-    node.append("title")
-        .text(function (d) { return d.id; });
+    //canvas.on("click", function () { return createNode() });
 
     simulation
         .nodes(graph.nodes)
@@ -366,19 +361,49 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     simulation.force("link")
         .links(graph.links);
 
-    function createNode() {
-        console.log("clicked")
-        node.append("circle")
-            .data({ "id": `w${Object.keys(worlds).length}`, "prop": "", "truth": null })
-            .enter().append("circle")
-            .attr("r", 20)
-            .attr("id", function (d) { return d.id; })
-            .attr("fill", function (d) { if (d.root == "true") return color(d.root); return color(d.type); })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-    }
+
+
+
+    // function createNode() {
+    //     console.log("clicked")
+    //     const newWorld = Object.keys(worlds).length
+    //     worlds[newWorld] = ''
+    //     for (const agent of Object.keys(relations)) {
+    //         relations[agent][newWorld] = new Array()
+    //     }
+    //     graph = toD3js(relations, worlds)
+    //     //graph['nodes'].push({ "id": `w${newWorld}`, "prop": "", "truth": null, "vx": 50, "vy": 50, x: "50", y: "50" })
+    //     //graph['nodes'].push({ "id": `w${newWorld}`, "prop": "", "truth": null, "vx": null, "vy": null, "x": null, "y": null })
+    //     //createGraph(false);
+    //     console.log(newWorld)
+    //     console.log(graph)
+    //     svg.select("g.nodes")
+    //         .selectAll("circle")
+    //         //.data([{ "id": `w${newWorld}`, "prop": "", "truth": null, "vx": 50, "vy": 50, x: "50", y: "50" }]).enter()
+    //         .data(graph.nodes).enter()
+    //         .append("circle")
+    //         .attr("r", 20)
+    //         .attr("id", function (d) { return d.id; })
+    //         .attr("cx", 50)
+    //         .attr("cy", 50)
+    //         .attr("fill", "#1f77b4")
+    //         .call(d3.drag()
+    //             .on("start", dragstarted)
+    //             .on("drag", dragged)
+    //             .on("end", dragended));
+
+    //     svg.select("g.links")
+    //         .selectAll("line")
+    //         .data(graph['links'])
+    //         .enter().append("line")
+    //         .attr("stroke", "#FF5733")
+    //         .attr("marker-end", "url(#arrow)");
+    //     // simulation
+    //     //     .nodes(graph.nodes)
+    //     //     .on("tick", ticked);
+    //     // ticked()
+    // }
+
     function ticked() {
         link
             .attr("x1", function (d) { return d.source.x; })
@@ -404,7 +429,43 @@ window.createGraph = async function (error, r = relations, w = worlds) {
 
     }
 }
+function update() {
+    var node = svg.selectAll(".node")
+        .data(graph.nodes);
 
+    node.enter().append("circle")
+        .attr("class", "node")
+        .attr("r", 20)
+        .attr("cx", function (d) { return d.x; })
+        .attr("cy", function (d) { return d.y; })
+        .merge(node);
+    node.exit().remove();
+
+    simulation.nodes(graph.nodes)
+        .force("link").links(graph.links);
+
+    simulation.alpha(0.1).restart();
+}
+window.handleMouse = async function (event) {
+    //if (!event) { return; }
+    if (event.type === "mousedown") {
+        console.log("mouse")
+        var mousePosition = d3.pointer(event);
+        createNode(mousePosition[0], mousePosition[1]);
+    }
+}
+
+// Add event listeners to the background rectangle
+canvas.on("mousedown", handleMouse())
+//.on("mousemove", handleMouse)
+//.on("mouseup", handleMouse);
+
+function createNode(x, y) {
+    const newWorld = Object.keys(worlds).length
+    let newNode = { "id": `w${newWorld}`, "prop": "", "truth": null, x: x, y: y };
+    graph.nodes.push(newNode);
+    update();
+}
 
 function dragstarted(d) {
     if (!d3.event.active) simulation.alphaTarget(0.1).restart();
@@ -428,6 +489,10 @@ function dragended(d) {
 //     svg.attr("transform", "translate(" + d3.event.translate + ")");
 // }
 
+const defaultWorlds = { 0: "p", 1: "q" };
+const defaultRelations = { "a": { 0: [0, 1], 1: [0, 1] }, "b": { 0: [0, 1], 1: [0, 1] } };
+
+createGraph(false, defaultRelations, defaultWorlds)
 
 export { relations, truth, worlds }
 

@@ -38,16 +38,16 @@
             <p>
                 <input type="button" onclick="createGraph(false)" value="Draw">
             </p>
-            <p>
-            <ul>
-                <li class="properties">Reflexive <input type="checkbox" id="reflexiveCheckBox"
-                        onclick="checkReflexivity()"></li>
-                <li class="properties">Symmetric <input type="checkbox" id="symmetricCheckBox"
-                        onclick="checkSymmetry()"></li>
-                <li class="properties">Transitive <input type="checkbox" id="transitiveCheckBox"
-                        onclick="checkTransitivity()"></li>
-            </ul>
-            </p>
+            <div id=properties>
+                <ul>
+                    <li class="properties">Reflexive <input type="checkbox" id="reflexiveCheckBox"
+                            onclick="checkReflexivity()"></li>
+                    <li class="properties">Symmetric <input type="checkbox" id="symmetricCheckBox"
+                            onclick="checkSymmetry()"></li>
+                    <li class="properties">Transitive <input type="checkbox" id="transitiveCheckBox"
+                            onclick="checkTransitivity()"></li>
+                </ul>
+            </div>
 
 
             <svg id="graph" width="600" height="600"></svg>
@@ -69,7 +69,8 @@
             </a>
             <h3>Group notions</h3>
             <ul>
-                <li>Everybody Knows: A conjunction of K<i>i</i> for all agents i in a group. EKabc if agents abc are to
+                <li>Everybody Knows: A conjunction of K<i>i</i> for all agents i in a group. EKabc if agents abc are
+                    to
                     be
                     evaluated. EKab if only a and b. Example: EKabcp - a, b and c all know p. p[!]EKabcp - after an
                     announcement
