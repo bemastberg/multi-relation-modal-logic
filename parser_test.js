@@ -246,8 +246,6 @@ var width = svg.attr("width");
 var height = svg.attr("height");
 var radius = 6;
 
-//svg = svg.call(d3.zoom().on("zoom", zoomed)).append("g");
-
 svg.append("defs").append("marker")
     .attr("id", "arrow")
     .attr("viewBox", "0 -5 10 10")
@@ -270,9 +268,6 @@ var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody().strength(-5000))
     .force("center", d3.forceCenter(width / 2, height / 2));
 
-
-
-//window.createGraph = async function (error) {
 window.changeNodeColor = async function (node, color) {
     svg.selectAll(`#${node}`)
         .attr('fill', color);
@@ -298,15 +293,16 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     if (error) throw error;
     svg.selectAll('g')
         .remove();
+    console.log(worlds)
     let graph = toD3js(r, w);
     console.log(graph);
-
+    if (Object.keys(worlds).length === 0) { worlds = w; relations = r; }
+    console.log(worlds)
     var link = svg.append("g")
         .attr("class", "links")
         .selectAll("line")
         .data(graph['links'])
         .enter().append("line")
-        //.attr("stroke", function (d) { return color(d.type); })
         .attr("stroke", "#FF5733")
         .attr("marker-end", "url(#arrow)");
 
