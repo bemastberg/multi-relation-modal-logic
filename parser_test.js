@@ -14,7 +14,6 @@ import { everybodyKnows, distributedKnowledge, commonKnowledge } from "./groupNo
 let relations = new Object();
 let worlds = new Object();
 let modelLoaded = false;
-//let data;
 const variableKey = 'prop';
 
 const unaries = [
@@ -72,6 +71,11 @@ function logFileRelations(event) {
     let str = event.target.result;
     let json = JSON.parse(str);
     relations = json;
+    populateUnariesBinaries()
+
+}
+
+function populateUnariesBinaries() {
     const agents = Object.keys(relations);
     for (const agent of agents) {
         unaries.push(
@@ -89,7 +93,6 @@ function logFileRelations(event) {
             { symbol: `CK${agent}`, key: `cokn${agent}`, precedence: 4 },
         )
     }
-    console.log(unaries)
 
 }
 
@@ -116,7 +119,6 @@ window.checkReflexivity = async function () {
         relations = removeForcedProperty("Reflexive");
         document.getElementById("reflexive").style.fontWeight = "normal";
     }
-    //console.log(relations)
     createGraph(false);
 }
 window.checkSymmetry = async function () {
@@ -131,7 +133,6 @@ window.checkSymmetry = async function () {
         relations = removeForcedProperty("Symmetric");
         document.getElementById("symmetric").style.fontWeight = "normal";
     }
-    console.log(relations)
     createGraph(false);
 }
 window.checkTransitivity = async function () {
@@ -220,6 +221,7 @@ function truth(world, worlds, relations, parsedFormula) {
 
 window.evaluateFormula = async function () {
 
+    //if 
     const DELParser = new FormulaParser(variableKey, unaries, binaries)
     document.getElementById("result").innerHTML = ''
     const formula = document.getElementById("formula").value;
@@ -296,8 +298,13 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     console.log(worlds)
     let graph = toD3js(r, w);
     console.log(graph);
-    if (Object.keys(worlds).length === 0) { worlds = w; relations = r; }
+    if (Object.keys(worlds).length === 0) {
+        worlds = w;
+        relations = r;
+        populateUnariesBinaries()
+    }
     console.log(worlds)
+    console.log(relations)
     var link = svg.append("g")
         .attr("class", "links")
         .selectAll("line")
@@ -501,8 +508,8 @@ function dragended(d) {
 //     svg.attr("transform", "translate(" + d3.event.translate + ")");
 // }
 
-const defaultWorlds = { 0: "p", 1: "q" };
-const defaultRelations = { "a": { 0: [0, 1], 1: [0, 1] }, "b": { 0: [0, 1], 1: [0, 1] } };
+const defaultWorlds = { "0": "p", "1": "q" };
+const defaultRelations = { "a": { "0": ["0", "1"], "1": ["0", "1"] }, "b": { "0": ["0", "1"], "1": ["0", "1"] } };
 
 createGraph(false, defaultRelations, defaultWorlds)
 
