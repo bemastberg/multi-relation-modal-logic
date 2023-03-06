@@ -110,9 +110,11 @@ let checkboxTransitive = document.getElementById("transitiveCheckBox");
 window.checkReflexivity = async function () {
     if (checkboxReflexive.checked === true) {
         relations = forceReflexivity();
+        document.getElementById("reflexive").style.fontWeight = "bold";
     }
     if (checkboxReflexive.checked !== true) {
         relations = removeForcedProperty("Reflexive");
+        document.getElementById("reflexive").style.fontWeight = "normal";
     }
     //console.log(relations)
     createGraph(false);
@@ -123,9 +125,11 @@ window.checkSymmetry = async function () {
         if (checkboxTransitive.checked === true) {
             relations = forceTransitivity();
         }
+        document.getElementById("symmetric").style.fontWeight = "bold";
     }
     if (checkboxSymmetric.checked !== true) {
         relations = removeForcedProperty("Symmetric");
+        document.getElementById("symmetric").style.fontWeight = "normal";
     }
     console.log(relations)
     createGraph(false);
@@ -136,9 +140,11 @@ window.checkTransitivity = async function () {
         if (checkboxSymmetric.checked === true) {
             relations = forceSymmetry();
         }
+        document.getElementById("transitive").style.fontWeight = "bold";
     }
     if (checkboxTransitive.checked !== true) {
         relations = removeForcedProperty("Transitive");
+        document.getElementById("transitive").style.fontWeight = "normal";
     }
     createGraph(false);
 }
@@ -261,7 +267,7 @@ var canvas = svg.append("rect")
     .attr("fill", "pink")
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function (d) { return d.id; }))
-    .force("charge", d3.forceManyBody().strength(-1000))
+    .force("charge", d3.forceManyBody().strength(-5000))
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 
@@ -333,7 +339,7 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         .attr("x", -5)
         .attr("y", 0)
         .style("font-family", "sans-serif")
-        .style("font-size", "0.7em")
+        .style("font-size", "0.8em")
         .text(function (d) { return d.prop; });
 
     var textEdges = svg.append("g").attr("class", "labels").selectAll("g")
@@ -341,8 +347,18 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         .enter().append("g")
 
     textEdges.append("text")
-        .attr("x", -30)
-        .attr("y", 15)
+        .attr("x", function (d) {
+            if (d.source === d.target) {
+                return (`${-3 + (parseInt(d.c) / 1.8)}em`)
+            }
+            else { return (`${-2 + (parseInt(d.c) / 1.8)}em`) }
+        })
+        .attr("y", function (d) {
+            if (d.source === d.target) {
+                return (`1em`)
+            }
+            else { return (`0.5em`) }
+        })
         .style("font-family", "sans-serif")
         .style("font-size", "0.7em")
         .text(function (d) { return d.agent })
@@ -493,6 +509,7 @@ const defaultWorlds = { 0: "p", 1: "q" };
 const defaultRelations = { "a": { 0: [0, 1], 1: [0, 1] }, "b": { 0: [0, 1], 1: [0, 1] } };
 
 createGraph(false, defaultRelations, defaultWorlds)
+
 
 export { relations, truth, worlds }
 

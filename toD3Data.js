@@ -4,6 +4,11 @@
 
 function toD3js(relations, worlds) {
     let data = new Object();
+    let distance = new Object();
+    const agents = Object.keys(relations)
+    for (const agent of agents) {
+        distance[agent] = agents.indexOf(agent)
+    }
     data["nodes"] = new Array();
     data["links"] = new Array();
     for (const world of Object.keys(worlds)) {
@@ -11,8 +16,10 @@ function toD3js(relations, worlds) {
     }
     for (const agent of Object.keys(relations)) {
         for (const world of Object.keys(worlds)) {
+            let counter = 0;
             for (const successor of relations[agent][world]) {
-                data["links"].push({ "source": `w${world}`, "target": `w${successor}`, "agent": agent })
+                data["links"].push({ "source": `w${world}`, "target": `w${successor}`, "agent": agent, "c": distance[agent] });
+                counter += 1;
             }
         }
     }
