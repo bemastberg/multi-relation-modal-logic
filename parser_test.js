@@ -252,7 +252,7 @@ svg.append("defs").append("marker")
     .attr("id", "arrow")
     .attr("viewBox", "0 -5 10 10")
     .attr("refX", 32)
-    .attr("refY", 0)
+    .attr("refY", -3)
     .attr("markerWidth", 8)
     .attr("markerHeight", 8)
     .attr("orient", "auto")
@@ -307,9 +307,12 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     console.log(relations)
     var link = svg.append("g")
         .attr("class", "links")
-        .selectAll("line")
+        //.selectAll("line")
+        .selectAll("path")
         .data(graph['links'])
-        .enter().append("line")
+        // .enter().append("line")
+        .enter().append("path")
+        .attr("fill", "transparent")
         .attr("stroke", "#FF5733")
         .attr("marker-end", "url(#arrow)");
 
@@ -424,11 +427,57 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     // }
 
     function ticked() {
-        link
-            .attr("x1", function (d) { return d.source.x; })
-            .attr("y1", function (d) { return d.source.y; })
-            .attr("x2", function (d) { return d.target.x; })
-            .attr("y2", function (d) { return d.target.y; });
+        // link
+        // .attr("x1", function (d) { return d.source.x; })
+        // .attr("y1", function (d) { return d.source.y; })
+        // .attr("x2", function (d) { return d.target.x; })
+        // .attr("y2", function (d) { return d.target.y; })
+        // .attr("d", function (d) {
+        //     if (d.source.x === d.target.x && d.source.y === d.target.y) {
+        //         xRotation = -45;
+        //         largeArc = 1;
+        //     }
+        // })
+        link.attr("d", function (d) {
+            var x1 = d.source.x,
+                y1 = d.source.y,
+                x2 = d.target.x,
+                y2 = d.target.y,
+                dx = x2 - x1,
+                dy = y2 - y1,
+                dr = Math.sqrt(dx * dx + dy * dy),
+
+                // Defaults for normal edge.
+                drx = dr,
+                dry = dr,
+                xRotation = 0, // degrees
+                largeArc = 0, // 1 or 0
+                sweep = 1; // 1 or 0
+
+            // Self edge.
+            if (x1 === x2 && y1 === y2) {
+                // Fiddle with this angle to get loop oriented.
+                xRotation = -25;
+
+                // Needs to be 1.
+                largeArc = 1;
+
+                // Change sweep to change orientation of loop. 
+                //sweep = 0;
+
+                // Make drx and dry different to get an ellipse
+                // instead of a circle.
+                drx = 20;
+                dry = 10;
+
+                // For whatever reason the arc collapses to a point if the beginning
+                // and ending points of the arc are the same, so kludge it.
+                x2 = x2 + 1;
+                y2 = y2 + 1;
+            }
+            return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
+        });
+
 
         node
             //make sure the nodes don't leave the bounds
@@ -508,6 +557,7 @@ function dragended(d) {
 //     svg.attr("transform", "translate(" + d3.event.translate + ")");
 // }
 
+// initialize default model
 const defaultWorlds = { "0": "p", "1": "q" };
 const defaultRelations = { "a": { "0": ["0", "1"], "1": ["0", "1"] }, "b": { "0": ["0", "1"], "1": ["0", "1"] } };
 
