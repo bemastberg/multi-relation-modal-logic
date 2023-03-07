@@ -252,7 +252,21 @@ svg.append("defs").append("marker")
     .attr("id", "arrow")
     .attr("viewBox", "0 -5 10 10")
     .attr("refX", 32)
+    //.attr("refY", -3)
     .attr("refY", -3)
+    .attr("markerWidth", 8)
+    .attr("markerHeight", 8)
+    .attr("orient", "auto")
+    .append("svg:path")
+    .attr("d", "M0,-5L10,0L0,5")
+    .attr("fill", "#FF5733");
+
+svg.append("defs").append("marker")
+    .attr("id", "arrowSelf")
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 18)
+    //.attr("refY", -3)
+    .attr("refY", -2)
     .attr("markerWidth", 8)
     .attr("markerHeight", 8)
     .attr("orient", "auto")
@@ -314,8 +328,11 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         .enter().append("path")
         .attr("fill", "transparent")
         .attr("stroke", "#FF5733")
-        .attr("marker-end", "url(#arrow)");
-
+        //.attr("marker-end", "url(#arrow)");
+        .attr("marker-end", function (d) {
+            if (d.source === d.target) { return "url(#arrowSelf)" }
+            else return "url(#arrow)"
+        });
 
     var node = svg.append("g")
         .attr("class", "nodes")
@@ -355,13 +372,13 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     textEdges.append("text")
         .attr("x", function (d) {
             if (d.source === d.target) {
-                return (`${-3 + (parseInt(d.c) / 1.8)}em`)
+                return (`${-3.5 + (parseInt(d.c) / 1.8)}em`)
             }
             else { return (`${-2 + (parseInt(d.c) / 1.8)}em`) }
         })
         .attr("y", function (d) {
             if (d.source === d.target) {
-                return (`1em`)
+                return (`-1em`)
             }
             else { return (`0.5em`) }
         })
@@ -457,23 +474,24 @@ window.createGraph = async function (error, r = relations, w = worlds) {
             // Self edge.
             if (x1 === x2 && y1 === y2) {
                 // Fiddle with this angle to get loop oriented.
-                xRotation = -25;
-
+                //xRotation = -25;
+                xRotation = 0;
                 // Needs to be 1.
                 largeArc = 1;
 
                 // Change sweep to change orientation of loop. 
-                //sweep = 0;
+                sweep = 1;
 
                 // Make drx and dry different to get an ellipse
                 // instead of a circle.
                 drx = 20;
+                //drx = 1;
                 dry = 10;
 
                 // For whatever reason the arc collapses to a point if the beginning
                 // and ending points of the arc are the same, so kludge it.
-                x2 = x2 + 1;
-                y2 = y2 + 1;
+                x2 = x2 - 10;
+                y2 = y2 - 10;
             }
             return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
         });
