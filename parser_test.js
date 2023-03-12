@@ -251,9 +251,9 @@ var radius = 6;
 svg.append("defs").append("marker")
     .attr("id", "arrow")
     .attr("viewBox", "0 -5 10 10")
-    .attr("refX", 32)
+    .attr("refX", 35)
     //.attr("refY", -3)
-    .attr("refY", -3)
+    .attr("refY", 0)
     .attr("markerWidth", 8)
     .attr("markerHeight", 8)
     .attr("orient", "auto")
@@ -321,18 +321,36 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     console.log(relations)
     var link = svg.append("g")
         .attr("class", "links")
-        //.selectAll("line")
         .selectAll("path")
         .data(graph['links'])
-        // .enter().append("line")
         .enter().append("path")
         .attr("fill", "transparent")
         .attr("stroke", "#FF5733")
-        //.attr("marker-end", "url(#arrow)");
         .attr("marker-end", function (d) {
             if (d.source === d.target) { return "url(#arrowSelf)" }
             else return "url(#arrow)"
         });
+    // var tlables = link.append("g").attr("class", "labels").selectAll("g")
+    //     .data(graph["links"])
+    //     .enter().append("g")
+    //     .attr("x", function (d) {
+    //         console.log(d)
+    //         if (d.source === d.target) {
+    //             return (`${-3.5 + (parseInt(d.c) / 1.8)}em`)
+    //         }
+    //         // else { return (`${-2 + (parseInt(d.c) / 1.8)}em`) }
+    //         else { return (`${(parseInt(d.c) / 1.8)}em`) }
+    //     })
+    //     .attr("y", function (d) {
+    //         if (d.source === d.target) {
+    //             return (`-1em`)
+    //         }
+    //         else { return (`0em`) }
+    //     })
+    //     .attr("id", function (d) { return d.agent + d.source + d.target })
+    //     .style("font-family", "sans-serif")
+    //     .style("font-size", "0.7em")
+    //     .text(function (d) { return d.agent })
 
     var node = svg.append("g")
         .attr("class", "nodes")
@@ -369,22 +387,28 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         .data(graph["links"])
         .enter().append("g")
 
+
     textEdges.append("text")
+
         .attr("x", function (d) {
+            console.log(d)
             if (d.source === d.target) {
                 return (`${-3.5 + (parseInt(d.c) / 1.8)}em`)
             }
-            else { return (`${-2 + (parseInt(d.c) / 1.8)}em`) }
+            else { return (`${0.5 + (parseInt(d.c) / 1.8)}em`) }
+            //else { return (`0em`) }
         })
         .attr("y", function (d) {
             if (d.source === d.target) {
                 return (`-1em`)
             }
-            else { return (`0.5em`) }
+            else { return (`0em`) }
         })
+        .attr("id", function (d) { return d.agent + d.source + d.target })
         .style("font-family", "sans-serif")
         .style("font-size", "0.7em")
         .text(function (d) { return d.agent })
+    console.log(textEdges)
 
 
     node.on("click", function (d) {
@@ -444,56 +468,37 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     // }
 
     function ticked() {
-        // link
-        // .attr("x1", function (d) { return d.source.x; })
-        // .attr("y1", function (d) { return d.source.y; })
-        // .attr("x2", function (d) { return d.target.x; })
-        // .attr("y2", function (d) { return d.target.y; })
-        // .attr("d", function (d) {
-        //     if (d.source.x === d.target.x && d.source.y === d.target.y) {
-        //         xRotation = -45;
-        //         largeArc = 1;
-        //     }
-        // })
         link.attr("d", function (d) {
             var x1 = d.source.x,
                 y1 = d.source.y,
                 x2 = d.target.x,
                 y2 = d.target.y,
-                dx = x2 - x1,
-                dy = y2 - y1,
-                dr = Math.sqrt(dx * dx + dy * dy),
+                //dx = x2 - x1,
+                //dy = y2 - y1,
+                //dr = Math.sqrt(dx * dx + dy * dy),
 
-                // Defaults for normal edge.
-                drx = dr,
-                dry = dr,
-                xRotation = 0, // degrees
-                largeArc = 0, // 1 or 0
-                sweep = 1; // 1 or 0
-
-            // Self edge.
-            if (x1 === x2 && y1 === y2) {
-                // Fiddle with this angle to get loop oriented.
-                //xRotation = -25;
-                xRotation = 0;
-                // Needs to be 1.
-                largeArc = 1;
-
-                // Change sweep to change orientation of loop. 
+                // Defaults for non-self loops
+                drx = 0,
+                dry = 0,
+                xRotation = 0,
+                largeArc = 0,
                 sweep = 1;
 
-                // Make drx and dry different to get an ellipse
-                // instead of a circle.
+            // Self loop
+            if (x1 === x2 && y1 === y2) {
+                xRotation = 0;
+                largeArc = 1;
+                sweep = 1;
                 drx = 20;
-                //drx = 1;
                 dry = 10;
-
-                // For whatever reason the arc collapses to a point if the beginning
-                // and ending points of the arc are the same, so kludge it.
+                // Crucial to align self loop with arrow head
                 x2 = x2 - 10;
                 y2 = y2 - 10;
+
             }
+            //else { return "L" + x1 + " " + y1 + " " + x2 + " " + y2 }
             return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
+
         });
 
 
@@ -508,9 +513,15 @@ window.createGraph = async function (error, r = relations, w = worlds) {
 
         text
             .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
-        textEdges
-            .attr("transform", function (d) { return "translate(" + (d.target.x + d.source.x) / 2 + "," + (d.target.y + d.source.y) / 2 + ")"; })
 
+        // agent names on edges should be close to target node
+        textEdges
+            .attr("transform", function (d) {
+                if (d.target === d.source) { return "translate(" + (d.target.x + d.source.x) / 2 + "," + (d.target.y + d.source.y) / 2 + ")"; }
+                else { return "translate(" + (d.target.x * 1.5 + d.source.x * 0.5) / 2 + "," + (d.target.y * 1.5 + d.source.y * 0.5) / 2 + ")"; }
+            })
+        // tlables
+        //     .attr("transform", function (d) { return "translate(" + (d.target.x + d.source.x) / 2 + "," + (d.target.y + d.source.y) / 2 + ")"; })
 
 
     }
