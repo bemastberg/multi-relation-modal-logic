@@ -15,6 +15,7 @@ let relations = new Object();
 let worlds = new Object();
 let modelLoaded = false;
 const variableKey = 'prop';
+let graph = new Object;
 
 const unaries = [
     { symbol: '~', key: 'neg', precedence: 4 },
@@ -310,7 +311,7 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     svg.selectAll('g')
         .remove();
     console.log(worlds)
-    let graph = toD3js(r, w);
+    graph = toD3js(r, w);
     console.log(graph);
     if (Object.keys(worlds).length === 0) {
         worlds = w;
@@ -426,47 +427,6 @@ window.createGraph = async function (error, r = relations, w = worlds) {
 
 
 
-
-    // function createNode() {
-    //     console.log("clicked")
-    //     const newWorld = Object.keys(worlds).length
-    //     worlds[newWorld] = ''
-    //     for (const agent of Object.keys(relations)) {
-    //         relations[agent][newWorld] = new Array()
-    //     }
-    //     graph = toD3js(relations, worlds)
-    //     //graph['nodes'].push({ "id": `w${newWorld}`, "prop": "", "truth": null, "vx": 50, "vy": 50, x: "50", y: "50" })
-    //     //graph['nodes'].push({ "id": `w${newWorld}`, "prop": "", "truth": null, "vx": null, "vy": null, "x": null, "y": null })
-    //     //createGraph(false);
-    //     console.log(newWorld)
-    //     console.log(graph)
-    //     svg.select("g.nodes")
-    //         .selectAll("circle")
-    //         //.data([{ "id": `w${newWorld}`, "prop": "", "truth": null, "vx": 50, "vy": 50, x: "50", y: "50" }]).enter()
-    //         .data(graph.nodes).enter()
-    //         .append("circle")
-    //         .attr("r", 20)
-    //         .attr("id", function (d) { return d.id; })
-    //         .attr("cx", 50)
-    //         .attr("cy", 50)
-    //         .attr("fill", "#1f77b4")
-    //         .call(d3.drag()
-    //             .on("start", dragstarted)
-    //             .on("drag", dragged)
-    //             .on("end", dragended));
-
-    //     svg.select("g.links")
-    //         .selectAll("line")
-    //         .data(graph['links'])
-    //         .enter().append("line")
-    //         .attr("stroke", "#FF5733")
-    //         .attr("marker-end", "url(#arrow)");
-    //     // simulation
-    //     //     .nodes(graph.nodes)
-    //     //     .on("tick", ticked);
-    //     // ticked()
-    // }
-
     function ticked() {
         link.attr("d", function (d) {
             var x1 = d.source.x,
@@ -526,42 +486,35 @@ window.createGraph = async function (error, r = relations, w = worlds) {
 
     }
 }
-function update() {
-    var node = svg.selectAll(".node")
-        .data(graph.nodes);
 
-    node.enter().append("circle")
-        .attr("class", "node")
-        .attr("r", 20)
-        .attr("cx", function (d) { return d.x; })
-        .attr("cy", function (d) { return d.y; })
-        .merge(node);
-    node.exit().remove();
 
-    simulation.nodes(graph.nodes)
-        .force("link").links(graph.links);
-
-    simulation.alpha(0.1).restart();
-}
-window.handleMouse = async function (event) {
-    //if (!event) { return; }
-    if (event.type === "mousedown") {
-        console.log("mouse")
-        var mousePosition = d3.pointer(event);
-        createNode(mousePosition[0], mousePosition[1]);
-    }
-}
-
+// window.handleMouse = async function (event) {
+//     if (!event) { console.log("zero"); return; }
+//     else {
+//         console.log("mouse")
+//         var mousePosition = d3.pointer(event);
+//         createNode(mousePosition[0], mousePosition[1]);
+//     }
+// }
+//addEventListener("click", handleMouse());
 // Add event listeners to the background rectangle
-canvas.on("mousedown", handleMouse())
-//.on("mousemove", handleMouse)
-//.on("mouseup", handleMouse);
+d3.select("rect")
+    .on('mousedown', function (d) {
+        console.log(d);
+        //console.log(d3.event)
+        //console.log(d3.mouse(d3.event))
+        var mousePosition = d3.mouse(this);
+        createNode(mousePosition[0], mousePosition[1])
+    })
+
 
 function createNode(x, y) {
     const newWorld = Object.keys(worlds).length
+    worlds[newWorld] = ""
     let newNode = { "id": `w${newWorld}`, "prop": "", "truth": null, x: x, y: y };
     graph.nodes.push(newNode);
-    update();
+    //simulation.nodes([newNode])
+    update([newNode]);
 }
 
 function dragstarted(d) {
@@ -581,10 +534,51 @@ function dragended(d) {
     d.fy = null;
 }
 
-// function zoomed() {
-//     //svg.attr("transform", "translate(" + d3.event.transform.x + "," + d3.event.transform.y + ")" + " scale(" + d3.event.transform.k + ")");
-//     svg.attr("transform", "translate(" + d3.event.translate + ")");
-// }
+function update(newNode) {
+    var node = svg.select(".nodes")
+        .selectAll(".node")
+        .data(newNode);
+
+    node.enter().append("circle")
+        //.attr("class", "node")
+        .attr("r", 20)
+        .attr("cx", function (d) { return d.x; })
+        .attr("cy", function (d) { return d.y; })
+        .attr("id", function (d) { return d.id; })
+        .attr("fill", function (d) { if (d.root == "true") return color(d.root); return color(d.type); })
+        .merge(node)
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+    node.exit().remove();
+    var simulation = d3.forceSimulation()
+        .force("charge", d3.forceManyBody().strength(-50))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .on("tick", ticked);
+
+    // Define the drag behavior
+    // var drag = d3.drag()
+    //     .on("start", dragstarted)
+    //     .on("drag", dragged)
+    //     .on("end", dragended);
+    simulation.nodes(newNode)
+    //.force("link").links(graph.links)
+    simulation.alpha(0.1).restart();
+    function ticked() {
+        node.attr("cx", function (d) { return d.x; })
+            .attr("cy", function (d) { return d.y; });
+
+        // link.attr("x1", function (d) { return d.source.x; })
+        //     .attr("y1", function (d) { return d.source.y; })
+        //     .attr("x2", function (d) { return d.target.x; })
+        //     .attr("y2", function (d) { return d.target.y; });
+    }
+
+
+
+}
 
 // initialize default model
 const defaultWorlds = { "0": "p", "1": "q" };
