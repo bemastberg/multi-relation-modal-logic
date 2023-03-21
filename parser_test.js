@@ -289,17 +289,20 @@ window.changeNodeColor = async function (node, color) {
     svg.selectAll(`#${node}`)
         .attr('fill', color);
 }
-
+// Remove worlds
 window.drawAnnouncedModel = async function () {
     const DELParser = new FormulaParser(variableKey, unaries, binaries);
     const formula = document.getElementById("formula").value;
     const parsedFormula = DELParser.parse(formula);
     const announcedModel = publicAnnouncement(parsedFormula, worlds, relations);
     relations = announcedModel[1];
+    const removedWorlds = Object.keys(worlds).filter(w => !Object.keys(announcedModel[0]).includes(w));
     worlds = announcedModel[0];
-    createGraph(false);
+    for (const world of removedWorlds) {
+        removeNode(world)
+    }
 }
-
+// Remove links
 window.drawCommunicatedModel = async function () {
     const DELParser = new FormulaParser(variableKey, unaries, binaries);
     const communicatingAgents = document.getElementById("communicatingAgents").value;
@@ -311,15 +314,15 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     svg.selectAll('g')
         .remove();
     console.log(worlds)
-    graph = toD3js(r, w);
+    if (Object.keys(graph).length === 0) {
+        graph = toD3js(r, w);
+    }
     console.log(graph);
     if (Object.keys(worlds).length === 0) {
         worlds = w;
         relations = r;
         populateUnariesBinaries()
     }
-    console.log(worlds)
-    console.log(relations)
     var link = svg.append("g")
         .attr("class", "links")
         .selectAll("path")
@@ -330,28 +333,9 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         .attr("marker-end", function (d) {
             if (d.source === d.target) { return "url(#arrowSelf)" }
             else return "url(#arrow)"
-        });
-    // var tlables = link.append("g").attr("class", "labels").selectAll("g")
-    //     .data(graph["links"])
-    //     .enter().append("g")
-    //     .attr("x", function (d) {
-    //         console.log(d)
-    //         if (d.source === d.target) {
-    //             return (`${-3.5 + (parseInt(d.c) / 1.8)}em`)
-    //         }
-    //         // else { return (`${-2 + (parseInt(d.c) / 1.8)}em`) }
-    //         else { return (`${(parseInt(d.c) / 1.8)}em`) }
-    //     })
-    //     .attr("y", function (d) {
-    //         if (d.source === d.target) {
-    //             return (`-1em`)
-    //         }
-    //         else { return (`0em`) }
-    //     })
-    //     .attr("id", function (d) { return d.agent + d.source + d.target })
-    //     .style("font-family", "sans-serif")
-    //     .style("font-size", "0.7em")
-    //     .text(function (d) { return d.agent })
+        })
+        .attr('class', function (d) { return `${d.source} ${d.target}` })
+
 
     var node = svg.append("g")
         .attr("class", "nodes")
@@ -364,7 +348,8 @@ window.createGraph = async function (error, r = relations, w = worlds) {
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
-            .on("end", dragended));
+            .on("end", dragended))
+        .on("contextmenu", removeNode);
 
     var text = svg.append("g").attr("class", "labels").selectAll("g")
         .data(graph.nodes)
@@ -373,13 +358,16 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     text.append("text")
         .attr("x", 30)
         .attr("y", "1em")
+        .attr("class", function (d) { return d.id })
         .style("font-family", "sans-serif")
         .style("font-size", "0.7em")
         .text(function (d) { return d.id; });
 
+
     text.append("text")
         .attr("x", -5)
         .attr("y", 0)
+        .attr("class", function (d) { return d.id })
         .style("font-family", "sans-serif")
         .style("font-size", "0.8em")
         .text(function (d) { return d.prop; });
@@ -406,6 +394,7 @@ window.createGraph = async function (error, r = relations, w = worlds) {
             else { return (`0em`) }
         })
         .attr("id", function (d) { return d.agent + d.source + d.target })
+        .attr('class', function (d) { return `${d.source} ${d.target}` })
         .style("font-family", "sans-serif")
         .style("font-size", "0.7em")
         .text(function (d) { return d.agent })
@@ -413,9 +402,14 @@ window.createGraph = async function (error, r = relations, w = worlds) {
 
 
     node.on("click", function (d) {
+        ticked();
         console.log("clicked", d.id);
     });
-
+    node.on("contextmenu", function (d) {
+        d3.event.preventDefault();
+        console.log('right');
+        removeNode(d);
+    });
     //canvas.on("click", function () { return createNode() });
 
     simulation
@@ -487,25 +481,14 @@ window.createGraph = async function (error, r = relations, w = worlds) {
     }
 }
 
-
-// window.handleMouse = async function (event) {
-//     if (!event) { console.log("zero"); return; }
-//     else {
-//         console.log("mouse")
-//         var mousePosition = d3.pointer(event);
-//         createNode(mousePosition[0], mousePosition[1]);
-//     }
-// }
-//addEventListener("click", handleMouse());
-// Add event listeners to the background rectangle
 d3.select("rect")
-    .on('mousedown', function (d) {
+    .on('click', function (d) {
         console.log(d);
-        //console.log(d3.event)
-        //console.log(d3.mouse(d3.event))
+
         var mousePosition = d3.mouse(this);
         createNode(mousePosition[0], mousePosition[1])
     })
+    .on("contextmenu", function (d) { d3.event.preventDefault() });
 
 
 function createNode(x, y) {
@@ -513,9 +496,191 @@ function createNode(x, y) {
     worlds[newWorld] = ""
     let newNode = { "id": `w${newWorld}`, "prop": "", "truth": null, x: x, y: y };
     graph.nodes.push(newNode);
-    //simulation.nodes([newNode])
-    update([newNode]);
+    update([newNode], false);
 }
+function removeNode(d) {
+    let id;
+    if (typeof (d) === 'object') { id = d.id }
+    else { id = `w${d}` };
+    console.log(id)
+    var node = svg.select(`#${id}`)
+        .remove();
+    var link = svg.selectAll(`.${id}`)
+        .remove();
+    graph.nodes = graph.nodes.filter(n => n.id !== id);
+    graph.links = graph.links.filter(l => !(l.source.id == id || l.target.id == id));
+
+    // Remove world from worlds and relations
+    const worldToBeRemoved = id.slice(1)
+    delete worlds[worldToBeRemoved]
+    for (const agent of Object.keys(relations)) {
+        delete relations[agent][worldToBeRemoved]
+        for (const world of Object.keys(relations[agent])) {
+            relations[agent][world] = relations[agent][world].filter(w => w !== worldToBeRemoved)
+        }
+    }
+}
+
+
+function update(addNode = false, removeNode = false) {
+    if (addNode) {
+        var node = svg.select(".nodes")
+            .selectAll(".node")
+            .data(addNode)
+
+        node.enter().append("circle")
+            .attr("r", 20)
+            .attr("id", function (d) { return d.id; })
+            .attr("fill", function (d) { if (d.root == "true") return color(d.root); return color(d.type); })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
+            .on("contextmenu", removeNode)
+            // .attr("r", 20)
+            .attr("cx", function (d) { return d.x; })
+            .attr("cy", function (d) { return d.y; })
+        // .attr("id", function (d) { return d.id; })
+        // .attr("fill", function (d) { if (d.root == "true") return color(d.root); return color(d.type); })
+
+
+        //node.exit().remove();
+        var link = svg.select(".links")
+            .selectAll(".link");
+        var text = svg.append("g").attr("class", "labels").selectAll("g")
+            .data(addNode)
+            .enter().append("g");
+
+        text.append("text")
+            .attr("x", 30)
+            .attr("y", "1em")
+            .attr("class", function (d) { return d.id })
+            .style("font-family", "sans-serif")
+            .style("font-size", "0.7em")
+            .text(function (d) { return d.id; });
+
+
+        text.append("text")
+            .attr("x", -5)
+            .attr("y", 0)
+            .attr("class", function (d) { return d.id })
+            .style("font-family", "sans-serif")
+            .style("font-size", "0.8em")
+            .text(function (d) { return d.prop; });
+
+        var textEdges = svg.append("g").attr("class", "labels").selectAll("g")
+
+        textEdges.append("text")
+
+            .attr("x", function (d) {
+                console.log(d)
+                if (d.source === d.target) {
+                    return (`${-3.5 + (parseInt(d.c) / 1.8)}em`)
+                }
+                else { return (`${0.5 + (parseInt(d.c) / 1.8)}em`) }
+            })
+            .attr("y", function (d) {
+                if (d.source === d.target) {
+                    return (`-1em`)
+                }
+                else { return (`0em`) }
+            })
+            .attr("id", function (d) { return d.agent + d.source + d.target })
+            .attr('class', function (d) { return `${d.source} ${d.target}` })
+            .style("font-family", "sans-serif")
+            .style("font-size", "0.7em")
+            .text(function (d) { return d.agent })
+
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function (d) { return d.id; }))
+            .force("charge", d3.forceManyBody().strength(-500))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+
+
+        simulation
+            .nodes(addNode)
+            .on("tick", ticked);
+        simulation.alpha(0.1).restart();
+        // function ticked() {
+        //     // node.attr("cx", function (d) { return d.x; })
+        //     //     .attr("cy", function (d) { return d.y; });
+        //     node
+        //         //make sure the nodes don't leave the bounds
+        //         .attr("cx", function (d) {
+        //             return (d.x = Math.max(radius, Math.min(width - radius, d.x)));
+        //         })
+        //         .attr("cy", function (d) {
+        //             return (d.y = Math.max(radius, Math.min(height - radius, d.y)));
+        //         })
+        //     // text
+        //     //     .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+        //     link.attr("x1", function (d) { return d.source.x; })
+        //         .attr("y1", function (d) { return d.source.y; })
+        //         .attr("x2", function (d) { return d.target.x; })
+        //         .attr("y2", function (d) { return d.target.y; });
+        // }
+        function ticked() {
+            link.attr("d", function (d) {
+                var x1 = d.source.x,
+                    y1 = d.source.y,
+                    x2 = d.target.x,
+                    y2 = d.target.y,
+
+
+                    // Defaults for non-self loops
+                    drx = 0,
+                    dry = 0,
+                    xRotation = 0,
+                    largeArc = 0,
+                    sweep = 1;
+
+                // Self loop
+                if (x1 === x2 && y1 === y2) {
+                    xRotation = 0;
+                    largeArc = 1;
+                    sweep = 1;
+                    drx = 20;
+                    dry = 10;
+                    // Crucial to align self loop with arrow head
+                    x2 = x2 - 10;
+                    y2 = y2 - 10;
+
+                }
+                return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
+
+            });
+
+
+            node
+                //make sure the nodes don't leave the bounds
+                .attr("cx", function (d) {
+                    return (d.x = Math.max(radius, Math.min(width - radius, d.x)));
+                })
+                .attr("cy", function (d) {
+                    return (d.y = Math.max(radius, Math.min(height - radius, d.y)));
+                })
+
+            text
+                .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+            // agent names on edges should be close to target node
+            textEdges
+                .attr("transform", function (d) {
+                    if (d.target === d.source) { return "translate(" + (d.target.x + d.source.x) / 2 + "," + (d.target.y + d.source.y) / 2 + ")"; }
+                    else { return "translate(" + (d.target.x * 1.5 + d.source.x * 0.5) / 2 + "," + (d.target.y * 1.5 + d.source.y * 0.5) / 2 + ")"; }
+                })
+
+
+        }
+        svg.selectAll("circle")
+            .call(drag)
+    }
+
+}
+var drag = d3.drag()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended)
 
 function dragstarted(d) {
     if (!d3.event.active) simulation.alphaTarget(0.1).restart();
@@ -524,60 +689,15 @@ function dragstarted(d) {
 }
 
 function dragged(d) {
+    if (!d3.event.active) simulation.alphaTarget(0.1);
     d.fx = d3.event.x;
     d.fy = d3.event.y;
 }
 
 function dragended(d) {
-    if (!d3.event.active) simulation.alphaTarget(0);
+    if (!d3.event.active) simulation.alphaTarget(0.1);
     d.fx = null;
     d.fy = null;
-}
-
-function update(newNode) {
-    var node = svg.select(".nodes")
-        .selectAll(".node")
-        .data(newNode);
-
-    node.enter().append("circle")
-        //.attr("class", "node")
-        .attr("r", 20)
-        .attr("cx", function (d) { return d.x; })
-        .attr("cy", function (d) { return d.y; })
-        .attr("id", function (d) { return d.id; })
-        .attr("fill", function (d) { if (d.root == "true") return color(d.root); return color(d.type); })
-        .merge(node)
-        .call(d3.drag()
-            .on("start", dragstarted)
-            .on("drag", dragged)
-            .on("end", dragended));
-
-    node.exit().remove();
-    var simulation = d3.forceSimulation()
-        .force("charge", d3.forceManyBody().strength(-50))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .on("tick", ticked);
-
-    // Define the drag behavior
-    // var drag = d3.drag()
-    //     .on("start", dragstarted)
-    //     .on("drag", dragged)
-    //     .on("end", dragended);
-    simulation.nodes(newNode)
-    //.force("link").links(graph.links)
-    simulation.alpha(0.1).restart();
-    function ticked() {
-        node.attr("cx", function (d) { return d.x; })
-            .attr("cy", function (d) { return d.y; });
-
-        // link.attr("x1", function (d) { return d.source.x; })
-        //     .attr("y1", function (d) { return d.source.y; })
-        //     .attr("x2", function (d) { return d.target.x; })
-        //     .attr("y2", function (d) { return d.target.y; });
-    }
-
-
-
 }
 
 // initialize default model
