@@ -200,9 +200,10 @@ window.evaluateFormula = async function () {
     const formula = document.getElementById("formula").value;
     try {
         document.getElementById("invalidprop").innerHTML = '';
+        document.getElementById("true").innerHTML = "";
+        document.getElementById("false").innerHTML = "";
         const parsedFormula = DELParser.parse(formula);
 
-        console.log(parsedFormula)
         for (const world of Object.keys(worlds)) {
             try {
                 if (truth(world, worlds, relations, parsedFormula)) {
