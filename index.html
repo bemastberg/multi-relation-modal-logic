@@ -4,11 +4,12 @@
 <head>
     <script src="./parser_test.js" type="module"></script>
     <script src="./forcedProperties.js" type="module"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
 
     <script>var exports = {};</script>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <link rel="stylesheet" href="style.css" type="text/css">
 
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="stylesheet" href="app.css" type="text/css">
 </head>
 
 <body>
@@ -20,24 +21,20 @@
             </ul>
         </div>
         <div class="content">
-            <p><a href="createmodel.html">Create your own model here</a></p>
+            <!-- <p><a href="createmodel.html">Create your own model here</a></p> -->
 
             <form id="getmodel">
-                Input model worlds (in json format) <input type="file" id="inputworlds"><br>
-                Input model relations (in json format) <input type="file" id="inputrelations" accept=".json"><br>
+                <!-- //Input model worlds (in json format) <input type="file" id="inputworlds"><br> -->
+                Input model (in json format) <input type="file" id="inputmodel" accept=".json"><br>
                 <button type="button" onclick="handleSubmit()" id="uploadButton">Upload</button>
             </form>
             <form id="frm1">
-                <span id="formulaInput">Please input your formula <input type="text" id="formula"></span><br>
-                <input type="button" onclick="evaluateFormula()" value="Evaluate formula"><input type="button"
-                    onclick="drawAnnouncedModel()" value="Announce Formula"><input type="button"
-                    onclick="drawCommunicatedModel()" value="Communicate (enter agents)"><input type="text"
-                    id="communicatingAgents">
+                <!-- <input type="button" value="Evaluate formula" id="evalbtn" onclick="buttonEvaluate()">
+                <p id="popupeval"></p> -->
+                <input type="button" onclick="drawCommunicatedModel()" value="Communicate (enter agents)"><input
+                    type="text" id="communicatingAgents"><span id="agenterror"></span>
             </form>
 
-            <p>
-                <input type="button" onclick="createGraph(false)" value="Draw">
-            </p>
             <div id=properties>
                 <ul>
                     <li class="properties"><label id="reflexive"><input type="checkbox" id="reflexiveCheckBox"
@@ -47,11 +44,52 @@
                     <li class="properties"><label id="transitive"><input type="checkbox" id="transitiveCheckBox"
                                 onclick="checkTransitivity()">Transitive</label></li>
                 </ul>
+                <a href='#' onclick='downloadJSON({ filename: "model.json" });'>Download Model</a>
+            </div>
+            <div id="chooseAgent">
+                <fieldset>
+                    <legend>Select agent to draw edge:</legend>
+
+                    <div>
+                        <input type="radio" id="aa" name="agent" value="a" onclick="setAgent('a')">
+                        <label for="a">a</label>
+                    </div>
+
+                    <div>
+                        <input type="radio" id="bb" name="agent" value="b" onclick="setAgent('b')">
+                        <label for="b">b</label>
+                    </div>
+
+                    <div>
+                        <input type="radio" id="c" name="agent" value="c" onclick="setAgent('c')">
+                        <label for="c">c</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="d" name="agent" value="d" onclick="setAgent('d')">
+                        <label for="d">d</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="e" name="agent" value="e" onclick="setAgent('e')">
+                        <label for="e">e</label>
+                    </div>
+                </fieldset>
+
+            </div>
+            <div id="propvar">
+                <label for="propvar">Input variable (single lower case letter) for selected world</label>
+                <input type="text" name="propvar" id="vals">
+                <input type="button" id="submitvals" onclick="addPropVar()" value="Submit variable">
+                <p id="invalidprop"></p>
+                <span id="formulaInput">Please input your formula <input type="text" id="formula"
+                        name="formula" /></span><br>
+                <input type="button" onclick="evaluateFormula()" value="Evaluate formula"><input type="button"
+                    onclick="drawAnnouncedModel()" value="Announce Formula">
+
             </div>
 
 
-            <svg id="graph" width="600" height="600"></svg>
-
+            <!-- <svg id="graph" width="600" height="600"></svg> -->
+            <div id="graph"></div>
             <p id="result">
             <table id="t-result">
                 <tr>
@@ -123,5 +161,6 @@
     </div>
 
 </body>
+<script type="module" src="app.js"></script>
 
 </html>

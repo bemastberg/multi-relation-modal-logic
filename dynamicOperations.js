@@ -27,38 +27,50 @@ function publicAnnouncement(formula, worlds, relations) {
     return [newWorlds, newRelation];
 
 }
-
+// function that creates an intersection of a communicationg group's set of relations,
+// then intersects this with the relation of every agent
+// also returns the symmetric difference, to see which edges to remove
 function publicCommunication(agents, communicatingAgents, worlds, relations) {
     const notCommunicatingAgents = agents.filter(agent => !communicatingAgents.includes(agent))
     let communicatingAgentsRelation = new Object();
     let newRelation = new Object();
+    let differenceRelation = new Object();
     for (const agent of agents) {
         newRelation[agent] = new Object();
+        differenceRelation[agent] = new Object()
     }
     if (communicatingAgents.length > 1)
     // intersect relations of communication agents if more than one agent
     {
         for (const world of Object.keys(worlds)) {
             let toBeIntersected = new Array();
+            //let difference = new Array();
+            //let union = new Set()
             for (const agent of communicatingAgents) {
                 toBeIntersected.push([...relations[agent][world]]);
+                //union.push(...relations[agent][world])
             }
             if (toBeIntersected.length > 0) {
                 var intersectedWorld = new Array(toBeIntersected.reduce((a, b) => a.filter(c => b.includes(c))));
             } else { var intersectedWorld = new Array() }
             communicatingAgentsRelation[world] = intersectedWorld;
+            //differenceRelation[world] = union.filter(w => !intersectedWorld.includes(i));
         };
     } else { communicatingAgentsRelation = relations[communicatingAgents]; }
     // intersect remaining agent's relations with communicating agents
     for (const world of Object.keys(worlds)) {
         for (const agent of communicatingAgents) {
-            newRelation[agent][world] = communicatingAgentsRelation[world];
+            newRelation[agent][world] = communicatingAgentsRelation[world].flat(1);
+            differenceRelation[agent][world] = relations[agent][world].filter(w => !newRelation[agent][world].includes(w));
         }
         for (const agent of notCommunicatingAgents) {
-            newRelation[agent][world] = new Array(relations[agent][world], communicatingAgentsRelation[world]).reduce((a, b) => a.filter(c => b.includes(c)))
+            newRelation[agent][world] = new Array(relations[agent][world], communicatingAgentsRelation[world]).reduce((a, b) => a.filter(c => b.includes(c)));
+            newRelation[agent][world] = newRelation[agent][world].flat(1)
+            differenceRelation[agent][world] = relations[agent][world].filter(w => !newRelation[agent][world].includes(w));
         }
     }
-    return newRelation;
+    console.log(differenceRelation)
+    return [newRelation, differenceRelation];
 }
 
 
