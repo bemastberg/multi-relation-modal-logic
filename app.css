@@ -1,3 +1,95 @@
+body {
+  background-color: aquamarine;
+}
+
+ul {
+  list-style-type: none;
+}
+
+h1,
+h2 {
+  text-align: center;
+}
+
+fieldset#selectAgent {
+  display: inline;
+}
+
+div#properties {
+  margin: auto;
+  width: 40%;
+  /* margin-right: auto;
+  margin-left: 0 */
+  /* float: left; */
+}
+
+div#setupModel {
+  border-bottom: 1px solid black;
+}
+
+div#propvar {
+  float: left;
+  width: 50%
+}
+
+div#enterformula {
+  float: left;
+  width: 50%
+}
+
+
+li.properties {
+  float: left;
+}
+
+/* .container {
+  margin: 25px;
+  width: 500;
+  height: 100%;
+} */
+
+.left-menu {
+  float: left;
+  width: 20%;
+}
+
+.content {
+  width: 60%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.links line {
+  stroke-opacity: 0.6;
+  stroke-width: 1px;
+  fill: none;
+}
+
+.radio {
+  display: inline;
+  float: left;
+}
+
+#chooseAgent {
+  display: inline;
+  margin: auto;
+  /* width: 30%;
+  margin-left: auto;
+  margin-right: 0; */
+}
+
+.nodes circle {
+  stroke: #333;
+  stroke-width: 1.5px;
+}
+
+table,
+th,
+td {
+  border: 1px dashed black;
+  border-collapse: collapse
+}
+
 svg {
   background-color: #FFF;
   cursor: default;
