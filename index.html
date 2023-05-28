@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    <h1>Multi relation Modal Logic playground</h1>
     <div class="container">
         <div class="left-menu">
             <ul>
@@ -28,68 +29,79 @@
                 Input model (in json format) <input type="file" id="inputmodel" accept=".json"><br>
                 <button type="button" onclick="handleSubmit()" id="uploadButton">Upload</button>
             </form>
-            <form id="frm1">
-                <!-- <input type="button" value="Evaluate formula" id="evalbtn" onclick="buttonEvaluate()">
-                <p id="popupeval"></p> -->
-                <input type="button" onclick="drawCommunicatedModel()" value="Communicate (enter agents)"><input
-                    type="text" id="communicatingAgents"><span id="agenterror"></span>
-            </form>
 
-            <div id=properties>
-                <ul>
-                    <li class="properties"><label id="reflexive"><input type="checkbox" id="reflexiveCheckBox"
-                                onclick="checkReflexivity()">Reflexive</label></li>
-                    <li class="properties"> <label id="symmetric"><input type="checkbox" id="symmetricCheckBox"
-                                onclick="checkSymmetry()">Symmetric</label></li>
-                    <li class="properties"><label id="transitive"><input type="checkbox" id="transitiveCheckBox"
-                                onclick="checkTransitivity()">Transitive</label></li>
-                </ul>
-                <a href='#' onclick='downloadJSON({ filename: "model.json" });'>Download Model</a>
+
+            <div id="setupModel">
+                <h2>Create your model</h2>
+                <div id="chooseAgent">
+                    <fieldset id="selectAgent">
+                        <legend>Select agent to draw edge:</legend>
+
+                        <div class="radio">
+                            <input type="radio" id="aa" name="agent" value="a" onclick="setAgent('a')">
+                            <label for="a">a</label>
+                        </div>
+
+                        <div class="radio">
+                            <input type="radio" id="bb" name="agent" value="b" onclick="setAgent('b')">
+                            <label for="b">b</label>
+                        </div>
+
+                        <div class="radio">
+                            <input type="radio" id="c" name="agent" value="c" onclick="setAgent('c')">
+                            <label for="c">c</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" id="d" name="agent" value="d" onclick="setAgent('d')">
+                            <label for="d">d</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" id="e" name="agent" value="e" onclick="setAgent('e')">
+                            <label for="e">e</label>
+                        </div><br>
+                    </fieldset>
+                </div>
+                <div id="propvar">
+                    <label for="propvar">Input variable (single lower case letter) for selected world</label>
+                    <input type="text" name="propvar" id="vals">
+                    <input type="button" id="submitvals" onclick="addPropVar()" value="Submit variable">
+                    <p id="invalidprop"></p>
+                </div>
+                <div id=properties>
+                    Check box for required property:
+                    <ul>
+                        <li class="properties"><label id="reflexive"><input type="checkbox" id="reflexiveCheckBox"
+                                    onclick="checkReflexivity()">Reflexive</label></li>
+                        <li class="properties"> <label id="symmetric"><input type="checkbox" id="symmetricCheckBox"
+                                    onclick="checkSymmetry()">Symmetric</label></li>
+                        <li class="properties"><label id="transitive"><input type="checkbox" id="transitiveCheckBox"
+                                    onclick="checkTransitivity()">Transitive</label></li>
+                    </ul>
+
+                </div>
+                <br>
+                <br>
             </div>
-            <div id="chooseAgent">
-                <fieldset>
-                    <legend>Select agent to draw edge:</legend>
+            <br>
+            <div id="evaluateOrTransform">
+                <h2>Evaluate or transform model</h2>
+                <div id="enterformula">
 
-                    <div>
-                        <input type="radio" id="aa" name="agent" value="a" onclick="setAgent('a')">
-                        <label for="a">a</label>
-                    </div>
+                    <span id="formulaInput">Please input your formula <input type="text" id="formula"
+                            name="formula" /></span><br>
+                    <input type="button" onclick="evaluateFormula()" value="Evaluate formula"><br><input type="button"
+                        onclick="drawAnnouncedModel()" value="Announce Formula"><br><br>
+                </div>
+                <div id="communication">
+                    <form id="frm1">
+                        <input type="button" onclick="drawCommunicatedModel()" value="Communicate (enter agents)"><input
+                            type="text" id="communicatingAgents"><span id="agenterror"></span>
+                    </form>
 
-                    <div>
-                        <input type="radio" id="bb" name="agent" value="b" onclick="setAgent('b')">
-                        <label for="b">b</label>
-                    </div>
-
-                    <div>
-                        <input type="radio" id="c" name="agent" value="c" onclick="setAgent('c')">
-                        <label for="c">c</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="d" name="agent" value="d" onclick="setAgent('d')">
-                        <label for="d">d</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="e" name="agent" value="e" onclick="setAgent('e')">
-                        <label for="e">e</label>
-                    </div>
-                </fieldset>
-
+                </div>
             </div>
-            <div id="propvar">
-                <label for="propvar">Input variable (single lower case letter) for selected world</label>
-                <input type="text" name="propvar" id="vals">
-                <input type="button" id="submitvals" onclick="addPropVar()" value="Submit variable">
-                <p id="invalidprop"></p>
-                <span id="formulaInput">Please input your formula <input type="text" id="formula"
-                        name="formula" /></span><br>
-                <input type="button" onclick="evaluateFormula()" value="Evaluate formula"><input type="button"
-                    onclick="drawAnnouncedModel()" value="Announce Formula">
-
-            </div>
-
-
-            <!-- <svg id="graph" width="600" height="600"></svg> -->
             <div id="graph"></div>
+            <a href='#' onclick='downloadJSON({ filename: "model.json" });'>Download Model</a>
             <p id="result">
             <table id="t-result">
                 <tr>

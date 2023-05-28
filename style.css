@@ -6,19 +6,47 @@ ul {
     list-style-type: none;
 }
 
+h1,
+h2 {
+    text-align: center;
+}
+
+fieldset#selectAgent {
+    display: inline;
+}
+
 div#properties {
     margin: auto;
+    width: 40%;
+    /* margin-right: auto;
+    margin-left: 0 */
+    /* float: left; */
 }
+
+div#setupModel {
+    border-bottom: 1px solid black;
+}
+
+div#propvar {
+    float: left;
+    width: 50%
+}
+
+div#enterformula {
+    float: left;
+    width: 50%
+}
+
 
 li.properties {
     float: left;
 }
 
-.container {
+/* .container {
     margin: 25px;
-    width: 700;
+    width: 500;
     height: 100%;
-}
+} */
 
 .left-menu {
     float: left;
@@ -37,6 +65,19 @@ li.properties {
     fill: none;
 }
 
+.radio {
+    display: inline;
+    float: left;
+}
+
+#chooseAgent {
+    display: inline;
+    margin: auto;
+    /* width: 30%;
+    margin-left: auto;
+    margin-right: 0; */
+}
+
 .nodes circle {
     stroke: #333;
     stroke-width: 1.5px;
@@ -49,14 +90,14 @@ td {
     border-collapse: collapse
 }
 
-#graph {
+/* #graph {
     border: 1px solid black;
     border-radius: 15px;
     background-color: pink;
     margin: auto
-}
+} */
 
-#formulaInput,
-#frm1 {
-    z-index: 99999;
-}
+
+/* #frm1 {
+    float: left;
+} */

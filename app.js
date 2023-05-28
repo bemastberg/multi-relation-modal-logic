@@ -561,7 +561,7 @@ function removeLinks(diffRelation) {
     svg.select(`.${link}`)
       .remove()
   }
-  links.filter(link => !linksToBeRemoved.includes(link.id))
+  links = links.filter(link => !linksToBeRemoved.includes(link.id))
 }
 function addForcedProperties(property) {
   for (const edge of forcedTransitions[property]) {

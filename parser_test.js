@@ -258,6 +258,7 @@ window.drawCommunicatedModel = async function () {
     try {
         document.getElementById("agenterror").innerHTML = ""
         const communicatingAgents = document.getElementById("communicatingAgents").value;
+        console.log(communicatingAgents)
         let result = publicCommunication(Object.keys(relations), communicatingAgents, worlds, relations);
         relations = result[0]
         let difference = result[1]
