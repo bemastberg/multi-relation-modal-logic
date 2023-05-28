@@ -65,6 +65,7 @@
                     <label for="propvar">Input variable (single lower case letter) for selected world</label>
                     <input type="text" name="propvar" id="vals">
                     <input type="button" id="submitvals" onclick="addPropVar()" value="Submit variable">
+                    <input type="button" id="removevals" onclick="removePropVar()" value="Remove variable">
                     <p id="invalidprop"></p>
                 </div>
                 <div id=properties>
@@ -89,7 +90,7 @@
 
                     <span id="formulaInput">Please input your formula <input type="text" id="formula"
                             name="formula" /></span><br>
-                    <input type="button" onclick="evaluateFormula()" value="Evaluate formula"><br><input type="button"
+                    <input type="button" onclick="evaluateFormula()" value="Evaluate formula"> or <input type="button"
                         onclick="drawAnnouncedModel()" value="Announce Formula"><br><br>
                 </div>
                 <div id="communication">

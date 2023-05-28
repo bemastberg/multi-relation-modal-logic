@@ -367,7 +367,7 @@ function restart() {
   g.append('svg:text')
     .attr('x', 0)
     .attr('y', 25)
-    .attr('class', (d) => `w${d.id}`)
+    .attr('class', (d) => `w${d.id} text${d.id}`)
     .text((d) => d.vals)
     .style('fill', 'white')
   circle = g.merge(circle);
@@ -512,13 +512,15 @@ function keyup() {
 window.addPropVar = async function () {
   let variable = document.getElementById("vals").value;
   if (!selectedNode) {
-    document.getElementById("invalidprop").innerHTML = "No world selected!"
+    document.getElementById("invalidprop").innerHTML = "No world selected!";
   } else {
-    document.getElementById("invalidprop").innerHTML = ""
+    document.getElementById("invalidprop").innerHTML = "";
     for (const node of nodes) {
       if (selectedNode.id === node.id) {
         if (!node.vals.includes(variable)) {
           node.vals = node.vals + variable;
+          svg.select(`.text${node.id}`)
+            .text(node.vals);
 
         }
         else { document.getElementById("invalidprop").innerHTML = `${variable} already true in world ${selectedNode.id}!` }
@@ -527,9 +529,28 @@ window.addPropVar = async function () {
 
   }
   console.log(nodes);
-  propvarRestart()
+  restart()
 }
-function propvarRestart() { restart() }
+
+window.removePropVar = async function () {
+  let variable = document.getElementById("vals").value;
+  if (!selectedNode) {
+    document.getElementById("invalidprop").innerHTML = "No world selected!"
+  } else {
+    document.getElementById("invalidprop").innerHTML = "";
+    for (const node of nodes) {
+      if (selectedNode.id === node.id) {
+        if (node.vals.includes(variable)) {
+          node.vals = node.vals.replace(variable, '');
+          svg.select(`.text${node.id}`)
+            .text(node.vals);
+
+        }
+        else { document.getElementById("invalidprop").innerHTML = `${variable} already false in world ${selectedNode.id}!` }
+      }
+    }
+  }
+}
 function removeNode(d) {
   let id = `w${d}`
   console.log(id)
@@ -566,7 +587,6 @@ function removeLinks(diffRelation) {
 function addForcedProperties(property) {
   for (const edge of forcedTransitions[property]) {
     if (property === "Symmetric") {
-      // let linkIDs = [`${edge[0] + edge[2] + edge[1]}`, `${edge[0] + edge[1] + edge[2]}`];
       let linkID = `${edge[0]}-${edge[2]}-${edge[1]}`
       for (const link of links) {
         if (linkID === link.id) {
