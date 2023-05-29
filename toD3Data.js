@@ -39,6 +39,13 @@ function fromD3js(links, nodes) {
     for (const link of links) {
         agents.add(link.id[0]);
     }
+    for (const node of nodes) {
+        if (node.reflexive) {
+            for (const agent of node.reflexive) {
+                agents.add(agent)
+            }
+        }
+    }
     agents = new Array(...agents)
     for (const agent of agents) {
         relations[agent] = new Object();
@@ -63,7 +70,7 @@ function fromD3js(links, nodes) {
     }
     for (const agent of Object.keys(relations)) {
         for (const node of nodes) {
-            if (node.reflexive === agent && !relations[agent][node.id].includes(node.id)) { relations[agent][node.id].push(node.id) }
+            if (node.reflexive.includes(agent) && !relations[agent][node.id].includes(node.id)) { relations[agent][node.id].push(node.id) }
         }
     }
     console.log(worlds);

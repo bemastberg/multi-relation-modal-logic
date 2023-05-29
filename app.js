@@ -26,7 +26,7 @@ const text = svg.append('text')
 //  - links are always source < target; edge directions are set by 'left' and 'right'.
 
 let nodes = [
-  { id: 0, vals: 'pq', reflexive: '' },
+  { id: 0, vals: 'pq', reflexive: 'a' },
   { id: 1, vals: 'q', reflexive: '' },
   { id: 2, vals: 'p', reflexive: '' },
   // { id: 3, vals: 'pqr', reflexive: true },
@@ -77,22 +77,25 @@ window.handleSubmit = async function () {
 }
 
 function logFileRelations(event) {
+  document.getElementById("inputError").innerHTML = ""
   let str = event.target.result;
   let json = JSON.parse(str);
   links = []
   nodes = []
   restart()
-  links = json.links;
-  console.log(links)
-  nodes = json.nodes;
-  for (const link of links) {
-    link.source = nodes[link.source.id]
-    link.target = nodes[link.target.id]
-  }
-  //populateUnariesBinaries()
-  console.log(links)
-  console.log(nodes)
-  restart()
+  try {
+    links = json.links;
+    console.log(links)
+    nodes = json.nodes;
+    for (const link of links) {
+      link.source = nodes[link.source.id]
+      link.target = nodes[link.target.id]
+    }
+    //populateUnariesBinaries()
+    console.log(links)
+    console.log(nodes)
+    restart()
+  } catch (error) { document.getElementById("inputError").innerHTML = " Could not read file properly! Maybe you uploaded the wrong file?" }
 }
 let lastNodeId = nodes.length;
 fromD3js(links, nodes)
@@ -369,6 +372,16 @@ function restart() {
     .attr('class', (d) => `w${d.id} text${d.id}`)
     .text((d) => d.vals)
     .style('fill', 'white')
+
+
+  // show reflexive edges
+  g.append('svg:text')
+    .attr('x', 10)
+    .attr('y', -18)
+    .attr('class', (d) => `reflexive${d.id}`)
+    .text((d) => d.reflexive)
+    .style('fill', 'white')
+
   circle = g.merge(circle);
 
   for (const ID of linkIDs) {
@@ -489,9 +502,13 @@ function keydown() {
         // toggle node reflexivity
         //selectedNode.reflexive = !selectedNode.reflexive;
         if (selectedNode.reflexive.includes(currentAgent)) {
-          selectedNode.reflexive = selectedNode.reflexive.replace(currentAgent, '')
+          selectedNode.reflexive = selectedNode.reflexive.replace(currentAgent, '');
+          addOrRemoveReflexiveEdge(selectedNode)
         }
-        else { selectedNode.reflexive = selectedNode.reflexive + currentAgent }
+        else {
+          selectedNode.reflexive = selectedNode.reflexive + currentAgent;
+          addOrRemoveReflexiveEdge(selectedNode)
+        }
       } else if (selectedLink) {
         // set link direction to right only
         selectedLink.left = false;
@@ -511,7 +528,12 @@ function keyup() {
     svg.classed('ctrl', false);
   }
 }
-
+function addOrRemoveReflexiveEdge(d) {
+  svg.select(`.reflexive${d.id}`)
+    .text(d.reflexive);
+  restart();
+}
+//function removeReflexiveEdge(d, agent)
 window.addPropVar = async function () {
   let variable = document.getElementById("vals").value;
   if (!selectedNode) {

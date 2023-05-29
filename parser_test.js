@@ -194,6 +194,7 @@ window.evaluateFormula = async function () {
     worlds = fromD3js(links, nodes)[0]
     console.log((worlds))
     relations = fromD3js(links, nodes)[1]
+    console.log(relations)
     populateUnariesBinaries()
     const DELParser = new FormulaParser(variableKey, unaries, binaries)
     document.getElementById("result").innerHTML = ''
