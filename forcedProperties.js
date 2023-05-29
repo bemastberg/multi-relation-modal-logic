@@ -22,9 +22,6 @@ function forceReflexivity() {
             if (!reflexiveRelations[agent][world].includes(parseInt(world))) {
                 reflexiveRelations[agent][world].push(parseInt(world));
                 forcedTransitions["Reflexive"].push([agent, world, parseInt(world)]);
-                for (const node of nodes) {
-                    node.reflexive = true;
-                }
             }
         }
     }

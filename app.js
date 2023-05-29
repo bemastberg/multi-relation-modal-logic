@@ -7,10 +7,9 @@ const width = 960;
 const height = 500;
 const colors = d3.scaleOrdinal(d3.schemeCategory10);
 let currentAgent = "a";
-//function setAgent(agent) 
+
 window.setAgent = async function (agent) {
   currentAgent = agent;
-  console.log(currentAgent)
   return currentAgent;
 }
 const svg = d3.select('#graph')
@@ -27,9 +26,9 @@ const text = svg.append('text')
 //  - links are always source < target; edge directions are set by 'left' and 'right'.
 
 let nodes = [
-  { id: 0, vals: 'pq', reflexive: true },
-  { id: 1, vals: 'q', reflexive: true },
-  { id: 2, vals: 'p', reflexive: true },
+  { id: 0, vals: 'pq', reflexive: '' },
+  { id: 1, vals: 'q', reflexive: '' },
+  { id: 2, vals: 'p', reflexive: '' },
   // { id: 3, vals: 'pqr', reflexive: true },
   // { id: 4, vals: 'qr', reflexive: true },
   // { id: 5, vals: 'pr', reflexive: true },
@@ -41,7 +40,7 @@ let nodes = [
 let links = [
   { source: nodes[0], target: nodes[1], left: false, right: true, id: "a-0-1" },
 
-  //{ source: nodes[0], target: nodes[2], left: false, right: true, id: "b02" },
+  // { source: nodes[0], target: nodes[2], left: false, right: true, id: "b02" },
 
   // { source: nodes[0], target: nodes[3], left: true, right: true, id: "c03" },
 
@@ -403,7 +402,7 @@ function mousedown() {
 
   // insert new node at point
   const point = d3.mouse(this);
-  const node = { id: ++lastNodeId, vals: '', reflexive: false, x: point[0], y: point[1] };
+  const node = { id: ++lastNodeId, vals: '', reflexive: '', x: point[0], y: point[1] };
   nodes.push(node);
 
   restart();
@@ -488,7 +487,11 @@ function keydown() {
     case 82: // R
       if (selectedNode) {
         // toggle node reflexivity
-        selectedNode.reflexive = !selectedNode.reflexive;
+        //selectedNode.reflexive = !selectedNode.reflexive;
+        if (selectedNode.reflexive.includes(currentAgent)) {
+          selectedNode.reflexive = selectedNode.reflexive.replace(currentAgent, '')
+        }
+        else { selectedNode.reflexive = selectedNode.reflexive + currentAgent }
       } else if (selectedLink) {
         // set link direction to right only
         selectedLink.left = false;
@@ -598,7 +601,7 @@ function addForcedProperties(property) {
     if (property === "Reflexive") {
       for (const node of nodes) {
         if (node.id === parseInt(edge[1])) {
-          node.reflexive = true;
+          node.reflexive = node.reflexive + edge[0]
         }
       }
     }
@@ -617,7 +620,7 @@ function removeForcedReflexivity() {
   for (const edge of edgesToRemove) {
     for (const node of nodes) {
       if (node.id === parseInt(edge[1])) {
-        node.reflexive = false;
+        node.reflexive = node.reflexive.replace(edge[0], '');
       }
     }
   }

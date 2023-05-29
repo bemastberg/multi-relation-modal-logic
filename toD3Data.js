@@ -63,7 +63,7 @@ function fromD3js(links, nodes) {
     }
     for (const agent of Object.keys(relations)) {
         for (const node of nodes) {
-            if (node.reflexive && !relations[agent][node.id].includes(node.id)) { relations[agent][node.id].push(node.id) }
+            if (node.reflexive === agent && !relations[agent][node.id].includes(node.id)) { relations[agent][node.id].push(node.id) }
         }
     }
     console.log(worlds);
