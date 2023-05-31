@@ -63,8 +63,7 @@ function forceTransitivity() {
             }
         }
     } while (countedAdditions > 0)
-    console.log(relations)
-    console.log(forcedTransitions)
+
     return transitiveRelations;
 }
 

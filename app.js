@@ -1,6 +1,20 @@
-import { relations } from "./parser_test.js";
 import { fromD3js } from "./toD3Data.js";
 import { forcedTransitions } from "./forcedProperties.js";
+
+// This file is a modified and extended version of 
+// https://github.com/rkirsling/modallogic/blob/master/js/app.js
+
+// Copyright (c) 2013 Ross Kirsling
+
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
 
 // set up SVG for D3
 const width = 960;
@@ -85,7 +99,6 @@ function logFileRelations(event) {
   restart()
   try {
     links = json.links;
-    console.log(links)
     nodes = json.nodes;
     for (const link of links) {
       link.source = nodes[link.source.id]
@@ -153,24 +166,10 @@ const dragLine = svg.append('svg:path')
   .attr('class', 'link dragline hidden')
   .attr('d', 'M0,0L0,0')
 
-//.attr('id', currentAgent)
-// .attr('id', function () {
-//   for (const agent of agents) {
-//     if (document.getElementById(`${agent}`).checked) {
-//       return document.getElementById(`${agent}`).value;
-//     }
-//   }
-// })
-
 
 // handles to link and node element groups
 let path = svg.append('svg:g').selectAll('path');
 let circle = svg.append('svg:g').selectAll('g');
-
-//.attr("startOffset", "50%")
-//.attr("stroke", "black")
-//.attr("font-weight", lain")
-
 
 // mouse event vars
 let selectedNode = null;
@@ -283,7 +282,7 @@ function restart() {
       // select node
       mousedownNode = d;
       selectedNode = (mousedownNode === selectedNode) ? null : mousedownNode;
-      console.log(selectedNode)
+
       selectedLink = null;
 
       // reposition drag line
@@ -323,7 +322,7 @@ function restart() {
         link[isRight ? 'right' : 'left'] = true;
       } else {
         if (source.id < target.id) {
-          console.log(isRight)
+
           if (isRight) {
             links.push({
               source, target, left: !isRight, right: isRight, id: `${currentAgent}-${source.id}-${target.id}`
@@ -333,17 +332,8 @@ function restart() {
               source, target, left: !isRight, right: isRight, id: `${currentAgent}-${target.id}-${source.id}`
             })
           }
-          // else {
-          //   console.log(source.id);
-          //   console.log(target.id)
-          //   links.push({
-          //     'source': target, 'target': source, left: !isRight, right: isRight, id: `${currentAgent + target.id + source.id}`
-          //   })
-          // }
-        };
-        console.log(source)
-        console.log(links)
 
+        };
 
         // select new link
         selectedLink = link
@@ -497,7 +487,6 @@ function keydown() {
     case 82: // R
       if (selectedNode) {
         // toggle node reflexivity
-        //selectedNode.reflexive = !selectedNode.reflexive;
         if (selectedNode.reflexive.includes(currentAgent)) {
           selectedNode.reflexive = selectedNode.reflexive.replace(currentAgent, '');
           addOrRemoveReflexiveEdge(selectedNode)
@@ -530,7 +519,6 @@ function addOrRemoveReflexiveEdge(d) {
     .text(d.reflexive);
   restart();
 }
-//function removeReflexiveEdge(d, agent)
 window.addPropVar = async function () {
   let variable = document.getElementById("vals").value;
   if (!selectedNode) {
@@ -550,7 +538,6 @@ window.addPropVar = async function () {
     }
 
   }
-  console.log(nodes);
   restart()
 }
 
@@ -575,17 +562,16 @@ window.removePropVar = async function () {
 }
 function removeNode(d) {
   let id = `w${d}`
-  console.log(id)
+
   svg.selectAll(`#${id}`)
     .remove();
   svg.selectAll(`.${id}`)
     .remove()
   svg.selectAll(`#t${id}`)
     .remove()
-  //svg.selectAll(`.${d}`)
   nodes = nodes.filter(n => n.id !== parseInt(d));
   links = links.filter(l => !(l.source.id == d || l.target.id == d));
-  console.log(nodes)
+
 }
 function removeLinks(diffRelation) {
   let linksToBeRemoved = new Array();
@@ -597,8 +583,6 @@ function removeLinks(diffRelation) {
     }
   }
   for (const link of linksToBeRemoved) {
-    console.log(link)
-    //console.log(text.select(`.${link}`))
     svg.select(`#${link}`)
       .remove();
     svg.select(`.${link}`)
@@ -630,7 +614,7 @@ function addForcedProperties(property) {
       }
     }
   }
-  console.log(links)
+
   restart()
 
 }
@@ -663,16 +647,13 @@ function removeForcedSymmetry() {
 }
 function removeTransitiveEdges() {
   const edgesToRemove = forcedTransitions["Transitive"];
-  console.log("edges")
-  console.log(forcedTransitions)
+
   for (const edge of edgesToRemove) {
     const edgeId = `${edge[0]}-${edge[1]}-${edge[2]}`;
-    console.log(edgeId)
     for (const link of links) {
       if (link.id == edgeId) { links = links.filter(l => l !== link) }
     }
   }
-  console.log(links);
   restart();
 }
 

@@ -53,12 +53,12 @@ function fromD3js(links, nodes) {
             relations[agent][world] = new Array();
         }
     }
-    console.log(Object.keys(relations))
+
     for (const agent of Object.keys(relations)) {
         for (const link of links) {
             const linkIDAsArr = link.id.split("-")
             if (linkIDAsArr[0] === agent) {
-                console.log(linkIDAsArr[1])
+
                 relations[agent][linkIDAsArr[1]].push(parseInt(linkIDAsArr[2]));
                 if (link.left && link.right) {
                     relations[agent][link.target.id].push(link.source.id);
@@ -73,8 +73,7 @@ function fromD3js(links, nodes) {
             if (node.reflexive.includes(agent) && !relations[agent][node.id].includes(node.id)) { relations[agent][node.id].push(node.id) }
         }
     }
-    console.log(worlds);
-    console.log(relations);
+
     return [worlds, relations]
 }
 

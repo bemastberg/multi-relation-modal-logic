@@ -5,17 +5,24 @@ import { forceReflexivity, forceSymmetry, forceTransitivity, forcedTransitions, 
 import { publicAnnouncement } from "./dynamicOperations.js";
 import { publicCommunication } from "./dynamicOperations.js";
 import { cartesian, complement, inverse } from "./furtherModalities.js";
-import { fromD3js, toD3js } from "./toD3Data.js";
+import { fromD3js } from "./toD3Data.js";
 import { everybodyKnows, distributedKnowledge, commonKnowledge } from "./groupNotions.js";
 import { links, nodes, svg, removeNode, removeLinks, addForcedProperties, removeTransitiveEdges, removeForcedSymmetry, removeForcedReflexivity } from "./app.js";
 
 
-// from https://github.com/rkirsling/modallogic/blob/master/js/MPL.js
+// Function truth() and variables unaries, binaries and variableKey are modelled
+// after https://github.com/rkirsling/modallogic/blob/master/js/MPL.js.
+// See copyright notice inn app.js
+// We use library FormulaParser: https://github.com/rkirsling/formula-parser.
+
+
+
+
 let relations = new Object();
 let worlds = new Object();
+
+
 const variableKey = 'prop';
-// let links = links;
-// let nodes = nodes;
 
 const unaries = [
     { symbol: '~', key: 'neg', precedence: 4 },
@@ -42,7 +49,7 @@ const binaries = [
 ];
 
 
-
+// Add modalities to unaries and binaries 
 function populateUnariesBinaries() {
     const agents = Object.keys(relations);
     for (const agent of agents) {
@@ -68,12 +75,12 @@ let checkboxReflexive = document.getElementById("reflexiveCheckBox");
 let checkboxSymmetric = document.getElementById("symmetricCheckBox");
 let checkboxTransitive = document.getElementById("transitiveCheckBox");
 
+// Functions for forced properties
 window.checkReflexivity = async function () {
     if (checkboxReflexive.checked === true) {
 
         relations = forceReflexivity();
         addForcedProperties('Reflexive');
-        console.log(nodes)
         document.getElementById("reflexive").style.fontWeight = "bold";
     }
     if (checkboxReflexive.checked !== true) {
@@ -119,8 +126,9 @@ window.checkTransitivity = async function () {
 }
 
 
+// Evaluate formula
 function truth(world, worlds, relations, parsedFormula) {
-    console.log(parsedFormula)
+
     if (parsedFormula.prop) {
         return (worlds[world].includes(parsedFormula.prop))
     }
@@ -149,10 +157,7 @@ function truth(world, worlds, relations, parsedFormula) {
         const announcedModel = publicAnnouncement(parsedFormula.ann[0], worlds, relations)
         return (truth(world, announcedModel[0], announcedModel[1], parsedFormula.ann[1]))
     }
-    // else if (parsedFormula.ann) {
-    //     const announcedModel = publicAnnouncement(parsedFormula.ann, worlds, relations)
-    //     return (truth(world, announcedModel[0], announcedModel[1], parsedFormula.ann))
-    // }
+
     else if (Object.keys(parsedFormula)[0].slice(0, 4) === 'comm') {
         const communicatedModel = publicCommunication(Object.keys(relations), [...Object.keys(parsedFormula)[0].slice(4)].sort((a, b) => a.localeCompare(b)).join(""), worlds, relations);
         return truth(world, worlds, communicatedModel, parsedFormula[Object.keys(parsedFormula)[0]]);
@@ -189,12 +194,10 @@ function truth(world, worlds, relations, parsedFormula) {
     else { throw new Error('Invalid formula!') }
 }
 
+// Function to evaluate formula in every world
 window.evaluateFormula = async function () {
-    const start = Date.now()
     worlds = fromD3js(links, nodes)[0]
-    console.log((worlds))
     relations = fromD3js(links, nodes)[1]
-    console.log(relations)
     populateUnariesBinaries()
     const DELParser = new FormulaParser(variableKey, unaries, binaries)
     document.getElementById("result").innerHTML = ''
@@ -224,18 +227,17 @@ window.evaluateFormula = async function () {
             }
         }
     } catch (error) { document.getElementById("invalidprop").innerHTML = "<span style='color:red'>Invalid formula!</span>" }
-    const end = Date.now()
-    console.log(`Execution time: ${end - start} ms`)
+
 
 }
 
-
+// Function to change colors of nodes (used to mark true or false)
 window.changeNodeColor = async function (node, color) {
     svg.select(`#w${node}`)
         .style('fill', color)
-    console.log(`#w${node}`)
+
 }
-// // Remove worlds
+// Function to create a new model after public announcement
 window.drawAnnouncedModel = async function () {
     worlds = fromD3js(links, nodes)[0];
     relations = fromD3js(links, nodes)[1];
@@ -252,15 +254,16 @@ window.drawAnnouncedModel = async function () {
     }
 }
 
+// Function to create a new model after communication
 window.drawCommunicatedModel = async function () {
     worlds = fromD3js(links, nodes)[0];
     relations = fromD3js(links, nodes)[1];
     populateUnariesBinaries();
-    const DELParser = new FormulaParser(variableKey, unaries, binaries); //not needed?
+    const DELParser = new FormulaParser(variableKey, unaries, binaries);
     try {
         document.getElementById("agenterror").innerHTML = ""
         const communicatingAgents = document.getElementById("communicatingAgents").value;
-        console.log(communicatingAgents)
+
         let result = publicCommunication(Object.keys(relations), communicatingAgents, worlds, relations);
         relations = result[0]
         let difference = result[1]
@@ -269,6 +272,7 @@ window.drawCommunicatedModel = async function () {
 
 }
 
+// Function to create and download JSON of current model
 window.downloadJSON = async function (args) {
     const model = { 'links': links, 'nodes': nodes }
     let data, filename, link;
