@@ -91,9 +91,6 @@ function logFileRelations(event) {
       link.source = nodes[link.source.id]
       link.target = nodes[link.target.id]
     }
-    //populateUnariesBinaries()
-    console.log(links)
-    console.log(nodes)
     restart()
   } catch (error) { document.getElementById("inputError").innerHTML = " Could not read file properly! Maybe you uploaded the wrong file?" }
 }

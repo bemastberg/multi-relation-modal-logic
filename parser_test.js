@@ -272,12 +272,9 @@ window.drawCommunicatedModel = async function () {
 window.downloadJSON = async function (args) {
     const model = { 'links': links, 'nodes': nodes }
     let data, filename, link;
-
-    let csv = 'data:text/json;charset=utf-8,' + JSON.stringify(model);
-    filename = args.filename || 'export.csv';
-
-    data = encodeURI(csv);
-
+    let json = 'data:text/json;charset=utf-8,' + JSON.stringify(model);
+    filename = args.filename || 'export.json';
+    data = encodeURI(json);
     link = document.createElement('a');
     link.setAttribute('href', data);
     link.setAttribute('download', filename);
