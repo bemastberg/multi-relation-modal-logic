@@ -69,7 +69,11 @@
                     <input type="button" id="removevals" onclick="removePropVar()" value="Remove variable">
                     <p id="invalidprop"></p>
                 </div>
+                <br>
+                <br>
+                <br>
                 <div id=properties>
+
                     Check box for required property:
                     <ul>
                         <li class="properties"><label id="reflexive"><input type="checkbox" id="reflexiveCheckBox"
@@ -95,13 +99,22 @@
                         onclick="drawAnnouncedModel()" value="Announce Formula"><br><br>
                 </div>
                 <div id="communication">
+                    <br>
                     <form id="frm1">
-                        <input type="button" onclick="drawCommunicatedModel()" value="Communicate (enter agents)"><input
-                            type="text" id="communicatingAgents"><span id="agenterror"></span>
+                        <input type="text" id="communicatingAgents"><input type="button"
+                            onclick="drawCommunicatedModel()" value="Communicate (enter agents)"><span
+                            id="agenterror"></span>
                     </form>
 
                 </div>
             </div>
+            <br>
+            <br>
+            <span>Click canvas to add node. Input variable at selected node in field above. Drag between node to draw
+                transition of selected agent. Press
+                R to toggle
+                reflexivity for selected agent at selected node. Press delete button to remove selected node or
+                transition.</span>
             <div id="graph"></div>
             <a href='#' onclick='downloadJSON({ filename: "model.json" });'>Download Model</a>
             <p id="result">
@@ -119,25 +132,6 @@
             <a id="language">
                 <h2>Language</h2>
             </a>
-            <h3>Group notions</h3>
-            <ul>
-                <li>Everybody Knows: A conjunction of K<i>i</i> for all agents i in a group. EKabc if agents abc are
-                    to
-                    be
-                    evaluated. EKab if only a and b. Example: EKabcp - a, b and c all know p. p[!]EKabcp - after an
-                    announcement
-                    of p, everybody in a, b and c know p. </li>
-                <li>Distributed knowledge: The intersection of relations of given agents. DKabp - p is distributed
-                    knowledge
-                    among agents a and b. (DKabp is true if and only if [C!]abp)</li>
-            </ul>
-            <h3>Communication</h3>
-            Syntax: [C!] followed by set of agents to communicate (publicly).
-            If all agents communicate, every agent need to be explicitly mentioned in formula.
-            Example:
-            [C!]a: agent a communicates everything she knows
-            [C!]ab: agents a and b communicate everything they know
-
             <h3>Basic Propositional language</h3>
             Propositional variables: p,q,r,s, etc. Any lower case letter (probably nice to avoid agent names)<br>
             Negation: ~<br>
@@ -145,7 +139,6 @@
             Conjunction: &<br>
             Implication: -><br>
             Equivalence: &#60;->
-
 
             <h3>Modalities</h3>
             <i>i</i>: agent <i>i</i> &#8712; G (group of agents)<br>
@@ -161,16 +154,32 @@
                 hand
                 argument is the formula to be evaluated</p>
             <p>Example: p[!]Kap: After p is announced, a will know p. (Typically written [p!]Kap or [!p]Kap)</p>
-            <h3>Todo:</h3>
+            <h3>Communication</h3>
+            Syntax: [C!] followed by set of agents to communicate (publicly).
+            If all agents communicate, every agent need to be explicitly mentioned in formula.
+            Example:
+            [C!]a: agent a communicates everything she knows
+            [C!]ab: agents a and b communicate everything they know
+            <h3>Group notions</h3>
             <ul>
-                <li><s>Complete transitive closure</s></li>
-                <li>Fix error when trying to evaluate a point that don't exist</li>
-                <li><s>Add more modalities (E, D, etc)</s></li>
-                <li>Look at cases where forced transitivity and symmetry may interact</li>
-                <li>Parser: alphabetize agents after input</li>
-                <li><s>Bug: Communication not working with only one agent</s></li>
+                <li>Everybody Knows: A conjunction of K<i>i</i> for all agents i in a group. EKabc if agents abc are
+                    to
+                    be
+                    evaluated. EKab if only a and b. Example: EKabcp - a, b and c all know p. p[!]EKabcp - after an
+                    announcement
+                    of p, everybody in a, b and c know p. </li>
+                <li>Common Knowledge: The transitive closure of EK. Example: CKabcp - it is common knowledge among a, b
+                    and c that p is true.</li>
+                <li>Distributed knowledge: The intersection of relations of given agents. DKabp - p is distributed
+                    knowledge
+                    among agents a and b. (DKabp is true if and only if [C!]abp)</li>
             </ul>
-            <p>blablabl</p>
+
+
+
+
+
+
         </div>
     </div>
 
